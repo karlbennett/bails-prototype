@@ -29,7 +29,7 @@
                         <bean id="contexts"
                               class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
                             <property name="handlers">
-                                <bean class="org.youthnet.debug.util.web.ClassPathWebAppContextFactoryBean">
+                                <bean class="org.bails.util.web.ClassPathWebAppContextFactoryBean">
                                     <constructor-arg name="webAppClassPath" value="webapp"/>
                                     <constructor-arg name="contextPath" value="/"/>
                                 </bean>
