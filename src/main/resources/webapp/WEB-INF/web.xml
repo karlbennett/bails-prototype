@@ -1,0 +1,22 @@
+<web-app id="WebApp_9" version="2.5"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="   http://java.sun.com/xml/ns/javaee
+                                http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+    <display-name>Bails Test Server</display-name>
+
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404.html</location>
+    </error-page>
+
+    <session-config>
+        <session-timeout>240</session-timeout>
+    </session-config>
+
+</web-app>
