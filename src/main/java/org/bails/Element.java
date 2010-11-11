@@ -19,7 +19,6 @@ public class Element {
     private CharSequence chars;
     private String name;
     private Map<String, Object> attributes = new HashMap<String, Object>();
-    private boolean attributesChanged = false;
     private List<Element> children = new ArrayList<Element>();
     private List<Element> bailsChildren = new ArrayList<Element>();
     private CharSequence closeTag;
@@ -28,6 +27,8 @@ public class Element {
         if (stream.isOpenTag()) {
 
             this.openTag = stream.getCurrentElement();
+
+            this.name = stream.getName();
             this.attributes = stream.getAttributes();
 
             findBailsId(this.attributes);
@@ -51,6 +52,7 @@ public class Element {
             this.openTag = stream.getCurrentElement();
             this.openClose = true;
 
+            this.name = stream.getName();
             this.attributes = stream.getAttributes();
 
             findBailsId(this.attributes);

@@ -13,12 +13,15 @@ public final class TestBailsStreamFactory {
     public static enum BAILS_STREAM_SELECTOR {
         CHAR_SEQUENCE_CHILD,
         SINGLE_ELEMENT_CHILD,
-        DOUBLE_ELEMENT_CHILD
+        DOUBLE_ELEMENT_CHILD,
+        BAILS_ELEMENT_CHILD
     }
 
-    public static final String TEST_OPEN_TAG = "<element one=\"1\" two=\"2\" three=\"3\">\n";
+    public static final String TEST_OPEN_TAG = "<element>\n";
+    public static final String TEST_OPEN_TAG_WITH_ATTRIBUTES = "<element one=\"1\" two=\"2\" three=\"3\">\n";
     public static final String TEST_CHAR_SEQUENCE = "Some text\n";
     public static final String TEST_CLOSE_TAG = "</element>\n";
+    public static final String TEST_NAME = "element";
 
     public static final Map<String, Object> TEST_ATTRIBUTES;
 
@@ -31,14 +34,26 @@ public final class TestBailsStreamFactory {
         TEST_ATTRIBUTES = Collections.unmodifiableMap(attributeMap);
     }
 
+    public static final Map<String, Object> TEST_ATTRIBUTES_WITH_BAILS_ID;
+
+    static {
+        Map<String, Object> attributeMap = new HashMap<String, Object>();
+        attributeMap.put("one", 1);
+        attributeMap.put("two", 2);
+        attributeMap.put("three", 3);
+        attributeMap.put("bails:id", "test_element");
+
+        TEST_ATTRIBUTES_WITH_BAILS_ID = Collections.unmodifiableMap(attributeMap);
+    }
+
     private static final List<TestElement> TEST_ELEMENTS_CHAR_SEQUENCE_CHILD;
 
     static {
         List<TestElement> testElements = new ArrayList<TestElement>();
 
-        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
 
         TEST_ELEMENTS_CHAR_SEQUENCE_CHILD = Collections.unmodifiableList(testElements);
     }
@@ -48,11 +63,11 @@ public final class TestBailsStreamFactory {
     static {
         List<TestElement> testElements = new ArrayList<TestElement>();
 
-        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
 
         TEST_ELEMENTS_SINGLE_ELEMENT_CHILD = Collections.unmodifiableList(testElements);
     }
@@ -62,16 +77,39 @@ public final class TestBailsStreamFactory {
     static {
         List<TestElement> testElements = new ArrayList<TestElement>();
 
-        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_ATTRIBUTES));
-        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
 
         TEST_ELEMENTS_DOUBLE_ELEMENT_CHILD = Collections.unmodifiableList(testElements);
+    }
+
+    private static final List<TestElement> TEST_ELEMENTS_BAILS_ELEMENT_CHILD;
+
+    static {
+        List<TestElement> testElements = new ArrayList<TestElement>();
+
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME,
+                TEST_ATTRIBUTES_WITH_BAILS_ID));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME,
+                TEST_ATTRIBUTES_WITH_BAILS_ID));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME,
+                TEST_ATTRIBUTES_WITH_BAILS_ID));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+
+        TEST_ELEMENTS_BAILS_ELEMENT_CHILD = Collections.unmodifiableList(testElements);
     }
 
     public static IBailsStream getNewBailsStream(BAILS_STREAM_SELECTOR stream_SELECTOR_selector) {
@@ -86,6 +124,9 @@ public final class TestBailsStreamFactory {
                 break;
             case DOUBLE_ELEMENT_CHILD:
                 stream = new TestBailsStream(TEST_ELEMENTS_DOUBLE_ELEMENT_CHILD);
+                break;
+            case BAILS_ELEMENT_CHILD:
+                stream = new TestBailsStream(TEST_ELEMENTS_BAILS_ELEMENT_CHILD);
                 break;
             default:
                 stream = null;
@@ -141,6 +182,11 @@ public final class TestBailsStreamFactory {
         }
 
         @Override
+        public String getName() {
+            return currentElement.getName();
+        }
+
+        @Override
         public Map<String, Object> getAttributes() {
             return currentElement.getAttributes();
         }
@@ -154,6 +200,7 @@ public final class TestBailsStreamFactory {
         private boolean openCloseTag = false;
         private boolean charSequence = false;
         private CharSequence elementChars;
+        private String name;
         private Map<String, Object> attributes = new HashMap<String, Object>();
 
         public TestElement(boolean openTag,
@@ -161,12 +208,14 @@ public final class TestBailsStreamFactory {
                            boolean openCloseTag,
                            boolean charSequence,
                            CharSequence elementChars,
+                           String name,
                            Map<String, Object> attributes) {
             this.openTag = openTag;
             this.closeTag = closeTag;
             this.openCloseTag = openCloseTag;
             this.charSequence = charSequence;
             this.elementChars = elementChars;
+            this.name = name;
             this.attributes = attributes;
         }
 
@@ -188,6 +237,10 @@ public final class TestBailsStreamFactory {
 
         public CharSequence getElementChars() {
             return elementChars;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public Map<String, Object> getAttributes() {

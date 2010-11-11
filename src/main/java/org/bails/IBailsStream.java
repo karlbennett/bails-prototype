@@ -23,5 +23,7 @@ public interface IBailsStream {
 
     public CharSequence getCurrentElement();
 
+    public String getName();
+
     public Map<String, Object> getAttributes();
 }
