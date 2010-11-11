@@ -1,300 +1,172 @@
 package org.bails;
 
-import org.bails.document.BailsDocument;
-import org.bails.render.Renderable;
-
 import java.util.*;
 
 /**
- * Class that contains all the generic methods for an element.
+ * This class gives an object representation of a tag within bails markup.
  *
  * @author Karl Bennett
  */
-public abstract class Element<V> implements Iterable<Element>, Renderable {
+public class Element {
 
-    private BailsDocument document;
+    public static final String BAILS_ID_NAME = "bails:id";
 
-    private String id;
-
-    private V value;
-
-    private Element parent;
-
+    private boolean bailsElement = false;
+    private String bailsId;
+    private CharSequence openTag;
+    private boolean openClose = false;
+    private boolean charSequence = false;
+    private CharSequence chars;
+    private String name;
+    private Map<String, Object> attributes = new HashMap<String, Object>();
+    private boolean attributesChanged = false;
     private List<Element> children = new ArrayList<Element>();
+    private List<Element> bailsChildren = new ArrayList<Element>();
+    private CharSequence closeTag;
 
-    private StringBuilder response;
+    public Element(IBailsStream stream) {
+        if (stream.isOpenTag()) {
 
-    public Element(String id) {
-        this.id = id;
-    }
+            this.openTag = stream.getCurrentElement();
+            this.attributes = stream.getAttributes();
 
-    public Element(String id, V value) {
-        this.id = id;
-        this.value = value;
-    }
+            findBailsId(this.attributes);
 
-    /**
-     * Add a child or children to the element.
-     *
-     * @param childs;
-     * @return this.
-     */
-    public Element add(Element... childs) {
-        if (childs.length == 1) {
-            this.children.add(childs[0]); // Add the child to this Element and then...
-            childs[0].setParent(this); // Set this Element as the child's parent.
-        } else {
-            this.children.addAll(Arrays.asList(childs));
-            for (Element child : childs) {
+            stream.next();
+
+            Element child = null;
+            while (!stream.isCloseTag()) {
+
+                child = new Element(stream);
+
                 this.children.add(child);
-                child.setParent(this);
+                if (child.isBailsElement()) this.bailsChildren.add(child);
+
+                stream.next();
             }
-        }
 
-        return this;
-    }
+            this.closeTag = stream.getCurrentElement();
+        } else if (stream.isOpenCloseTag()) {
 
-    /**
-     * Convenience method to check if this Element contains children.
-     *
-     * @return
-     */
-    public boolean hasChildren() {
-        return 0 < children.size();
-    }
+            this.openTag = stream.getCurrentElement();
+            this.openClose = true;
 
-    /**
-     * Get the document for the Element.
-     *
-     * @return the Elements document.
-     */
-    public BailsDocument getDocument() {
-        return document;
-    }
+            this.attributes = stream.getAttributes();
 
-    /**
-     * Set the document for this Element.
-     *
-     * @param document the new document for the Element.
-     */
-    public void setDocument(BailsDocument document) {
-        this.document = document;
-    }
+            findBailsId(this.attributes);
 
-    /**
-     * Get the elements Bails id,
-     *
-     * @return the bails id of the Element.
-     */
-    public String getId() {
-        return id;
-    }
+        } else if (stream.isCharSequence()) {
 
-    /**
-     * Set the elements Bails id.
-     *
-     * @param id the Bails id of the Element.
-     */
-    public void setId(String id) {
-        this.id = id;
-    }
+            this.chars = stream.getCurrentElement();
+            this.charSequence = true;
 
-    /**
-     * Get the value for this element.
-     *
-     * @return the value of the element.
-     */
-    public V getValue() {
-        return value;
-    }
-
-    /**
-     * Set the value of the Element.
-     *
-     * @param value the new value for the element.
-     */
-    public void setValue(V value) {
-        this.value = value;
-    }
-
-    /**
-     * Get the Elements parent.
-     *
-     * @return the parent of the Element.
-     */
-    public Element getParent() {
-        return parent;
-    }
-
-    /**
-     * Set the parent of the Element. This is protected because it should only ever be called from within the add
-     * method of the parent.
-     *
-     * @param parent the Element that is the parent of this Element.
-     */
-    protected void setParent(Element parent) {
-        this.parent = parent;
-    }
-
-    /**
-     * Get the response string for this Element.
-     *
-     * @return the responce string asa StringBuilder.
-     */
-    public StringBuilder getResponse() {
-        if (response == null) response = new StringBuilder();
-
-        return response;
-    }
-
-    /**
-     * Set the response instance for this Element. This should only ever be called within the render method.
-     *
-     * @param response
-     */
-    private void setResponse(StringBuilder response) {
-        this.response = response;
+        } else throw new RuntimeException("Tried to initialise an element of unknown type.");
     }
 
     @Override
-    public void render() throws Exception {
-        if (getParent() != null) { // If this Element has a parent then...
-            setResponse(getParent().getResponse()); // ...get a reference to the parents response and...
-            setDocument(getParent().getDocument()); // ...also get a reference to the parents document.
+    public String toString() {
+        StringBuilder elementString = new StringBuilder(0);
+
+        if (isCharSequence()) {
+            elementString.append(chars);
+        } else if (isOpenClose()) {
+            elementString.append(getOpenTag());
+        } else {
+            elementString.append(getOpenTag());
+            for (Element child : children) elementString.append(child.toString());
+            elementString.append(getCloseTag());
         }
 
-        StringBuilder response = getResponse();
-        BailsDocument document = getDocument();
-        Iterator<Element> childIterator = null;
+        return elementString.toString();
+    }
 
-        // If the current line in the document is a bails tag then that means this method has been called recursively.
-        // So tag now needs to be processed.
-        if (document.isBailsTag()) {
-            response.append(document.toString()); // First add the tag back into the response.
-            // If this Element does not have any children then it the value within must be replaced.
-            if (!hasChildren()) {
-                response.append(getValue().toString());
-                // Read to the closing tag for this element.
-                while (document.hasNext() && !document.isClosingTag()) document.next();
-                response.append(document.toString()); // Add the closing tag to the document.
+    /*
+        Convenience methods.
+     */
 
-                return; // Then lastly return back to the parent.
-            } else { // Otherwise if this Element has children then they need to be processed so get the child iterator.
-                childIterator = iterator();
-            }
-        }
+    private void findBailsId(Map<String, Object> attributes) {
+        Object bailsId = attributes.get(BAILS_ID_NAME);
 
-        // Read through the document.
-        while (document.hasNext()) {
-            document.next();
-
-            if (document.isBailsTag()) { // If a bails tag has been found it must be a child.
-                if (hasChildren()) {
-                    Element child = childIterator.next();
-
-                    if (child.getId().equals(document.getBailsId())) {
-
-                    } else {
-                        throw new Exception();
-                    }
-
-                } else {
-                    throw new Exception("Document syntax error: Child tags found for " + getId()
-                            + " where none have been added to the class.");
-                }
-            } else {
-                response.append(document.toString());
-            }
-
+        if (bailsId != null) {
+            this.bailsId = bailsId.toString();
+            this.bailsElement = true;
         }
     }
 
     /*
-    * Methods stolen from the java.util.List interface.
-    */
+        Getters and Setters.
+     */
 
-    public int size() {
-        return children.size();
+    /**
+     * @return true if this represents a bails element.
+     */
+    public boolean isBailsElement() {
+        return bailsElement;
     }
 
-    public boolean isEmpty() {
-        return children.isEmpty();
+    /**
+     * @return The bails id for this element.
+     */
+    public String getBailsId() {
+        return bailsId;
     }
 
-    public boolean contains(Object o) {
-        return children.contains(o);
+    /**
+     * @return Get the character sequence representation of this elements opening tag e.g. For <element></element> this
+     * would return "<element>".
+     */
+    public CharSequence getOpenTag() {
+        return openTag;
     }
 
-    @Override
-    public Iterator<Element> iterator() {
-        return children.iterator();
+    /**
+     * @return True if this Element class represents a openClose element e.g. <element/>.
+     */
+    public boolean isOpenClose() {
+        return openClose;
     }
 
-    public Object[] toArray() {
-        return children.toArray();
+    /**
+     * @return True if this Element class represents a charSequence element e.g. "Some text".
+     */
+    public boolean isCharSequence() {
+        return charSequence;
     }
 
-    public <Element> Element[] toArray(Element[] ts) {
-        return children.toArray(ts);
+    /**
+     * @return The name of this element e.g. For <element/> this would return "element".
+     */
+    public String getName() {
+        return name;
     }
 
-    public boolean remove(Object o) {
-        return children.remove(o);
+    /**
+     * @return The list of attributes for this element e.g. For <element one="1"/> this would return map containing a
+     * key of "one" with a matching value of 1.
+     */
+    public Map<String, Object> getAttributes() {
+        return attributes;
     }
 
-    public boolean containsAll(Collection<?> objects) {
-        return children.containsAll(objects);
+    /**
+     * @return The list of child elements within this Element class.
+     */
+    public List<Element> getChildren() {
+        return children;
     }
 
-    public boolean addAll(Collection<? extends Element> elements) {
-        return children.addAll(elements);
+    /**
+     * @return The list of Bails child elements within the Element class.
+     */
+    public List<Element> getBailsChildren() {
+        return bailsChildren;
     }
 
-    public boolean addAll(int i, Collection<? extends Element> elements) {
-        return children.addAll(i, elements);
-    }
-
-    public boolean removeAll(Collection<?> objects) {
-        return children.removeAll(objects);
-    }
-
-    public boolean retainAll(Collection<?> objects) {
-        return children.retainAll(objects);
-    }
-
-    public void clear() {
-        children.clear();
-    }
-
-    public Element get(int i) {
-        return children.get(i);
-    }
-
-    public Element set(int i, Element element) {
-        return children.set(i, element);
-    }
-
-    public Element remove(int i) {
-        return children.remove(i);
-    }
-
-    public int indexOf(Object o) {
-        return children.indexOf(o);
-    }
-
-    public int lastIndexOf(Object o) {
-        return children.lastIndexOf(o);
-    }
-
-    public ListIterator<Element> listIterator() {
-        return children.listIterator();
-    }
-
-    public ListIterator<Element> listIterator(int i) {
-        return children.listIterator(i);
-    }
-
-    public List<Element> subList(int i, int i1) {
-        return children.subList(i, i1);
+    /**
+     * @return Get the character sequence representation of this elements closing tag e.g. For <element></element> this
+     * would return "</element>".
+     */
+    public CharSequence getCloseTag() {
+        return closeTag;
     }
 }
