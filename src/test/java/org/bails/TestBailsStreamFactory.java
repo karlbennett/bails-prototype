@@ -177,12 +177,12 @@ public final class TestBailsStreamFactory {
         }
 
         @Override
-        public boolean isCharSequence() {
+        public boolean isCharacters() {
             return currentElement.isCharSequence();
         }
 
         @Override
-        public CharSequence getCurrentElement() {
+        public CharSequence getCharSequence() {
             return currentElement.getElementChars();
         }
 

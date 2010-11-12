@@ -149,12 +149,12 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     @Override
-    public boolean isCharSequence() {
+    public boolean isCharacters() {
         return currentEvent.getEventType() == CHARACTERS;
     }
 
     @Override
-    public CharSequence getCurrentElement() {
+    public CharSequence getCharSequence() {
         return currentEventString.toString();
     }
 

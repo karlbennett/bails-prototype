@@ -21,9 +21,9 @@ public interface IBailsStream {
 
     public boolean isOpenCloseTag();
 
-    public boolean isCharSequence();
+    public boolean isCharacters();
 
-    public CharSequence getCurrentElement();
+    public CharSequence getCharSequence();
 
     public String getName();
 

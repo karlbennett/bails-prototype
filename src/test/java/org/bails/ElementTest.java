@@ -29,16 +29,16 @@ public class ElementTest {
     public void testCharSequenceElement() throws Exception {
         IBailsStream stream = mock(IBailsStream.class);
 
-        when(stream.isCharSequence()).thenReturn(true);
+        when(stream.isCharacters()).thenReturn(true);
         when(stream.isOpenTag()).thenReturn(false);
         when(stream.isOpenCloseTag()).thenReturn(false);
         when(stream.isCloseTag()).thenReturn(false);
 
-        when(stream.getCurrentElement()).thenReturn(TEST_CHAR_SEQUENCE);
+        when(stream.getCharSequence()).thenReturn(TEST_CHAR_SEQUENCE);
 
         Element element = new Element(stream);
 
-        verify(stream, times(1)).getCurrentElement();
+        verify(stream, times(1)).getCharSequence();
         verify(stream, never()).next();
 
         assertEquals("char sequence equals", TEST_CHAR_SEQUENCE, element.toString());
@@ -48,17 +48,17 @@ public class ElementTest {
     public void testOpenCloseElement() throws Exception {
         IBailsStream stream = mock(IBailsStream.class);
 
-        when(stream.isCharSequence()).thenReturn(false);
+        when(stream.isCharacters()).thenReturn(false);
         when(stream.isOpenTag()).thenReturn(false);
         when(stream.isOpenCloseTag()).thenReturn(true);
         when(stream.isCloseTag()).thenReturn(false);
 
-        when(stream.getCurrentElement()).thenReturn(TEST_OPEN_CLOSE_TAG);
+        when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG);
         when(stream.getName()).thenReturn(TEST_NAME);
 
         Element element = new Element(stream);
 
-        verify(stream, times(1)).getCurrentElement();
+        verify(stream, times(1)).getCharSequence();
         verify(stream, times(1)).getName();
         verify(stream, times(1)).getAttributes();
         verify(stream, never()).next();
@@ -71,18 +71,18 @@ public class ElementTest {
     public void testOpenCloseElementWithAttributes() throws Exception {
         IBailsStream stream = mock(IBailsStream.class);
 
-        when(stream.isCharSequence()).thenReturn(false);
+        when(stream.isCharacters()).thenReturn(false);
         when(stream.isOpenTag()).thenReturn(false);
         when(stream.isOpenCloseTag()).thenReturn(true);
         when(stream.isCloseTag()).thenReturn(false);
 
-        when(stream.getCurrentElement()).thenReturn(TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES);
+        when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES);
         when(stream.getName()).thenReturn(TEST_NAME);
         when(stream.getAttributes()).thenReturn(TEST_ATTRIBUTES);
 
         Element element = new Element(stream);
 
-        verify(stream, times(1)).getCurrentElement();
+        verify(stream, times(1)).getCharSequence();
         verify(stream, times(1)).getName();
         verify(stream, times(1)).getAttributes();
         verify(stream, never()).next();

@@ -26,7 +26,7 @@ public class Element {
     public Element(IBailsStream stream) {
         if (stream.isOpenTag()) {
 
-            this.openTag = stream.getCurrentElement();
+            this.openTag = stream.getCharSequence();
 
             this.name = stream.getName();
             this.attributes = stream.getAttributes();
@@ -46,10 +46,10 @@ public class Element {
                 stream.next();
             }
 
-            this.closeTag = stream.getCurrentElement();
+            this.closeTag = stream.getCharSequence();
         } else if (stream.isOpenCloseTag()) {
 
-            this.openTag = stream.getCurrentElement();
+            this.openTag = stream.getCharSequence();
             this.openClose = true;
 
             this.name = stream.getName();
@@ -57,9 +57,9 @@ public class Element {
 
             findBailsId(this.attributes);
 
-        } else if (stream.isCharSequence()) {
+        } else if (stream.isCharacters()) {
 
-            this.chars = stream.getCurrentElement();
+            this.chars = stream.getCharSequence();
             this.charSequence = true;
 
         } else throw new RuntimeException("Tried to initialise an element of unknown type.");
