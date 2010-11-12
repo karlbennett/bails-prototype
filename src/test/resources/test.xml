@@ -1,0 +1,7 @@
+<element xmlns:bails="http://www.bails.org/">
+    <element one="1" two="2" three="3">Some text one.</element>
+    <element>Some test two.</element>
+    <element bails:id="test_element">Some text three.</element>
+    <element></element>
+    <element/>
+</element>
