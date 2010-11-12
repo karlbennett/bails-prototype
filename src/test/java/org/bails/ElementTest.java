@@ -174,4 +174,27 @@ public class ElementTest {
 
         assertEquals("element close tag correct", TEST_CLOSE_TAG, element.getCloseTag());
     }
+
+    @Test
+    public void testOpenTagWithChildElementWithChild() throws Exception {
+        Element element = new Element(TestBailsStreamFactory.getNewBailsStream(CHILD_WITH_ELEMENT_CHILD));
+
+        assertEquals("element open tag correct", TEST_OPEN_TAG, element.getOpenTag());
+        assertEquals("element name correct", TEST_NAME, element.getName());
+        assertEquals("element has three children", 1, element.getChildren().size());
+        Element child = element.getChildren().get(0);
+        assertFalse("element child is tag", child.isCharSequence());
+        assertEquals("element child open tag correct", TEST_OPEN_TAG, child.getOpenTag());
+        assertEquals("element child name correct", TEST_NAME, child.getName());
+        assertEquals("element child close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
+        child = child.getChildren().get(0);
+        assertFalse("element child child is tag", child.isCharSequence());
+        assertEquals("element child child name correct", TEST_NAME, child.getName());
+        assertEquals("element child child close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
+        child = child.getChildren().get(0);
+        assertTrue("element child child child is char sequence", child.isCharSequence());
+        assertEquals("element child child child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
+
+        assertEquals("element close tag correct", TEST_CLOSE_TAG, element.getCloseTag());
+    }
 }
