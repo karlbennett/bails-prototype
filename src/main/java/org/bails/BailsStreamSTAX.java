@@ -20,30 +20,35 @@ import static javax.xml.stream.XMLStreamConstants.*;
  */
 public class BailsStreamSTAX implements IBailsStream {
 
+    // The new line char for the system.
     private static final String SYSTEM_NEW_LINE = System.getProperty("line.separator");
+    // The default unix new line char.
     private static final String UNIX_NEW_LINE = "\n";
 
+    // A regexp to check for a new line(s) surrounded by white space.
     private static final String SYSTEM_NEW_LINE_REGEXP = "(\\s*" + SYSTEM_NEW_LINE + "+\\s*)+";
     private static final String UNIX_NEW_LINE_REGEXP = "(\\s*" + UNIX_NEW_LINE + "+\\s*)+";
 
-    private XMLInputFactory factory;
-    private XMLEventReader parser;
+    private XMLEventReader parser; // The STAX parser to be used throughout this class.
 
-    private XMLEvent currentEvent;
+    private XMLEvent currentEvent; // The xml event that is currently being pointed to by this stream.
 
+    // The white space that should be placed before the char sequence of the current event.
     private String preWhiteSpace = "";
+    // The white space that should be placed after the char sequence of the current event.
     private String postWhiteSpace = "";
 
+    // The char sequence of the current xml event including whitespace.
     private StringBuilder currentEventString = new StringBuilder(0);
 
-    private Map<String, Object> attributes;
+    private Map<String, Object> attributes; // The attributes for the current xml event.
 
     public BailsStreamSTAX(InputStream stream) {
-        this.factory = XMLInputFactory.newInstance();
+        XMLInputFactory factory = XMLInputFactory.newInstance(); // Get a new STAX factory class.
 
         try {
-            this.parser = this.factory.createXMLEventReader(stream);
-            next();
+            this.parser = factory.createXMLEventReader(stream); // Get a new STAX event reader.
+            next(); // Initialise the stream so that the it starts with data.
         } catch (XMLStreamException e) {
             System.out.println("SORT THIS OUT!: " + e.getMessage());
         }
@@ -61,15 +66,18 @@ public class BailsStreamSTAX implements IBailsStream {
         preWhiteSpace = "";
         postWhiteSpace = "";
 
-        if (hasNext()) {
+        if (hasNext()) { // If there is a next event...
             try {
-                XMLEvent event = parser.peek();
-                String eventString = event.toString();
+                XMLEvent event = parser.peek(); // ...peek at it and...
+                String eventString = event.toString(); // ...get it's character representation.
 
+                // Then if the next event is just a new ling and whitespace...
                 if (eventString.matches(UNIX_NEW_LINE_REGEXP) || eventString.matches(SYSTEM_NEW_LINE_REGEXP)) {
+                    // Record the whitespace that needs to be placed before the next real element.
                     preWhiteSpace = eventString.substring(eventString.indexOf('\n') + 1);
+                    // Record the whitespace that needs to be placed after this element.
                     postWhiteSpace = eventString.substring(0, eventString.indexOf('\n') + 1);
-                    parser.nextEvent();
+                    parser.nextEvent(); // Lastly move on to the next element what ever it may be.
                 }
             } catch (XMLStreamException e) {
                 System.out.println("SORT THIS OUT!: " + e.getMessage());
@@ -77,51 +85,77 @@ public class BailsStreamSTAX implements IBailsStream {
         }
     }
 
+    private Map<String, Object> parsAttributes(StartElement element) {
+        Map<String, Object> attributes = new HashMap<String, Object>(); // Initialise the attributes map.
+
+        // Get the attributes iterator from the STAX start element object.
+        Iterator<Attribute> attributeIterator = element.getAttributes();
+        Attribute attribute = null; // Place holder for each attribute.
+
+        while (attributeIterator.hasNext()) { // Iterate over the attributes...
+            attribute = attributeIterator.next(); // ...recording each one, ...
+
+            QName name = attribute.getName(); // ...taking the name then...
+
+            // Recording adding that name and value into the attribute map.
+            // A check is done on the attribute prefix. If it exists it is added to the attributes name separated by a
+            // colon (:).
+            attributes.put(name.getPrefix().equals("") ? name.getLocalPart() :
+                    name.getPrefix() + ":" + name.getLocalPart(),
+                    attribute.getValue());
+        }
+
+        return attributes;
+    }
+
     /*
        Override methods.
     */
 
+    /**
+     * @see org.bails.IBailsStream#hashCode()
+     */
     @Override
     public boolean hasNext() {
+        // If the stream is not pointing to the end of the document there must be more to process.
         return currentEvent.getEventType() != END_DOCUMENT;
     }
 
+    /**
+     * @see org.bails.IBailsStream#next()
+     */
     @Override
     public void next() {
         try {
-            currentEventString.setLength(0);
-            currentEvent = this.parser.nextEvent();
+            currentEventString.setLength(0); // Clear the xml events char sequence.
+            currentEvent = this.parser.nextEvent(); // get the next event.
 
+            // Search for the next start/end element or a character event.
+            // These are the only three events supported at the moment. This means that the stat/end document events
+            // are ignored. So they will be absent from a rendered Bails page.
             while (currentEvent.getEventType() != START_ELEMENT
                     && currentEvent.getEventType() != CHARACTERS
                     && currentEvent.getEventType() != END_ELEMENT) {
                 currentEvent = this.parser.nextEvent();
             }
 
+            // Add the white space that should be at the start of the char sequence.
             currentEventString.append(preWhiteSpace);
-            currentEventString.append(currentEvent);
+            currentEventString.append(currentEvent); // Add char sequence.
 
+            // Get the white space that should be at the end of this char sequence as well as the white space that
+            // should be before the next.
             checkForNewLine();
 
+            // Add the white space that should be at the end of the char sequence.
             currentEventString.append(postWhiteSpace);
 
+            // If this is an opening tag any attributes will need be recorded.
             if (currentEvent.getEventType() == START_ELEMENT) {
-                attributes = new HashMap<String, Object>();
 
-                Iterator<Attribute> attributeIterator = ((StartElement) currentEvent).getAttributes();
-                Attribute attribute = null;
+                attributes = parsAttributes((StartElement) currentEvent); // Pars the start events attributes.
 
-                while (attributeIterator.hasNext()) {
-                    attribute = attributeIterator.next();
-
-                    QName name = attribute.getName();
-
-                    attributes.put(name.getPrefix().equals("") ? name.getLocalPart() :
-                            name.getPrefix() + ":" + name.getLocalPart(),
-                            attribute.getValue());
-                }
-
-            } else {
+            } else { // Otherwise there should be no attributes.
                 attributes = null;
             }
         } catch (XMLStreamException e) {
@@ -129,15 +163,21 @@ public class BailsStreamSTAX implements IBailsStream {
         }
     }
 
+    /**
+     * @see org.bails.IBailsStream#close()
+     */
     @Override
     public void close() {
         try {
-            parser.close();
+            parser.close(); // Close the STAX stream.
         } catch (XMLStreamException e) {
             System.out.println("SORT THIS OUT!: " + e.getMessage());
         }
     }
 
+    /**
+     * @see org.bails.IBailsStream#isOpenTag()
+     */
     @Override
     public boolean isOpenTag() {
         return currentEvent.getEventType() == START_ELEMENT;
@@ -148,25 +188,39 @@ public class BailsStreamSTAX implements IBailsStream {
         return currentEvent.getEventType() == END_ELEMENT;
     }
 
+    /**
+     * @see org.bails.IBailsStream#isOpenCloseTag()
+     */
     @Override
     public boolean isOpenCloseTag() {
-        return false;
+        return false; // No open close tag support yet.
     }
 
+    /**
+     * @see org.bails.IBailsStream#isCharacters()
+     */
     @Override
     public boolean isCharacters() {
         return currentEvent.getEventType() == CHARACTERS;
     }
 
+    /**
+     * @see org.bails.IBailsStream#getCharSequence()
+     */
     @Override
     public CharSequence getCharSequence() {
+        // This should contain the tags char sequence along with any surrounding whitespace.
         return currentEventString.toString();
     }
 
+    /**
+     * @see org.bails.IBailsStream#getName()
+     */
     @Override
     public String getName() {
-        String name = "";
+        String name = null;
 
+        // Need to check what type of element this is because there are two that could contain a name.
         switch (currentEvent.getEventType()) {
             case START_ELEMENT:
                 name = ((StartElement) currentEvent).getName().toString();
@@ -179,6 +233,9 @@ public class BailsStreamSTAX implements IBailsStream {
         return name;
     }
 
+    /**
+     * @see org.bails.IBailsStream#getAttributes()
+     */
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
