@@ -14,7 +14,8 @@ public final class TestBailsStreamFactory {
         CHAR_SEQUENCE_CHILD,
         SINGLE_ELEMENT_CHILD,
         DOUBLE_ELEMENT_CHILD,
-        BAILS_ELEMENT_CHILD
+        BAILS_ELEMENT_CHILD,
+        CHILD_WITH_ELEMENT_CHILD
     }
 
     public static final String XML_LINE_ONE =      "<element xmlns:bails='http://www.bails.org/'>\n";
@@ -133,6 +134,22 @@ public final class TestBailsStreamFactory {
         TEST_ELEMENTS_BAILS_ELEMENT_CHILD = Collections.unmodifiableList(testElements);
     }
 
+    private static final List<TestElement> TEST_ELEMENTS_ELEMENT_CHILD_WITH_CHILD;
+
+    static {
+        List<TestElement> testElements = new ArrayList<TestElement>();
+
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(true, false, false, false, TEST_OPEN_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, false, false, true, TEST_CHAR_SEQUENCE, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+        testElements.add(new TestElement(false, true, false, false, TEST_CLOSE_TAG, TEST_NAME, TEST_ATTRIBUTES));
+
+        TEST_ELEMENTS_ELEMENT_CHILD_WITH_CHILD = Collections.unmodifiableList(testElements);
+    }
+
     public static IBailsStream getNewBailsStream(BAILS_STREAM_SELECTOR stream_SELECTOR_selector) {
         IBailsStream stream = null;
 
@@ -148,6 +165,9 @@ public final class TestBailsStreamFactory {
                 break;
             case BAILS_ELEMENT_CHILD:
                 stream = new TestBailsStream(TEST_ELEMENTS_BAILS_ELEMENT_CHILD);
+                break;
+            case CHILD_WITH_ELEMENT_CHILD:
+                stream = new TestBailsStream(TEST_ELEMENTS_ELEMENT_CHILD_WITH_CHILD);
                 break;
             default:
                 stream = null;
