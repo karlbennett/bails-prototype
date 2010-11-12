@@ -21,10 +21,12 @@ public final class TestBailsStreamFactory {
         CHILD_WITH_ELEMENT_CHILD
     }
 
+    public static final String TEST_BAILS_ID = "test_element";
+
     public static final String XML_LINE_ONE =      "<element xmlns:bails='http://www.bails.org/'>\n";
     public static final String XML_LINE_TWO =      "    <element one='1' two='2' three='3'>Some text one.</element>\n";
     public static final String XML_LINE_THREE =    "    <element>Some test two.</element>\n";
-    public static final String XML_LINE_FOUR =     "    <element bails:id='test_element'>Some text three.</element>\n";
+    public static final String XML_LINE_FOUR =     "    <element bails:id='" + TEST_BAILS_ID + "'>Some text three.</element>\n";
     public static final String XML_LINE_FIVE =     "    <element></element>\n";
     public static final String XML_LINE_SIX =      "    <element/>\n";
     public static final String XML_LINE_SEVEN =    "</element>";
@@ -66,7 +68,7 @@ public final class TestBailsStreamFactory {
         attributeMap.put(ELEMENT_ATTRIBUTE_ONE, 1);
         attributeMap.put(ELEMENT_ATTRIBUTE_TWO, 2);
         attributeMap.put(ELEMENT_ATTRIBUTE_THREE, 3);
-        attributeMap.put(ELEMENT_ATTRIBUTE_BAILS_ID, "test_element");
+        attributeMap.put(ELEMENT_ATTRIBUTE_BAILS_ID, TEST_BAILS_ID);
 
         TEST_ATTRIBUTES_WITH_BAILS_ID = Collections.unmodifiableMap(attributeMap);
     }
