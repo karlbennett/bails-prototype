@@ -13,6 +13,8 @@ public interface IBailsStream {
 
     public void next();
 
+    public void close();
+
     public boolean isOpenTag();
 
     public boolean isCloseTag();
