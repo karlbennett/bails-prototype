@@ -1,5 +1,6 @@
 package org.bails;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -113,7 +114,11 @@ public class BailsStreamSTAX implements IBailsStream {
                 while (attributeIterator.hasNext()) {
                     attribute = attributeIterator.next();
 
-                    attributes.put(attribute.getName().toString(), attribute.getValue());
+                    QName name = attribute.getName();
+
+                    attributes.put(name.getPrefix().equals("") ? name.getLocalPart() :
+                            name.getPrefix() + ":" + name.getLocalPart(),
+                            attribute.getValue());
                 }
 
             } else {
