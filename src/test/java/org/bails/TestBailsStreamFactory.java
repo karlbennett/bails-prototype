@@ -157,6 +157,11 @@ public final class TestBailsStreamFactory {
         }
 
         @Override
+        public void close() {
+
+        }
+
+        @Override
         public boolean isOpenTag() {
             return currentElement.isOpenTag();
         }
