@@ -101,6 +101,24 @@ public class MarkupElement {
         }
     }
 
+    /**
+     * Get a child from the MarkupElement.
+     * @param i the index of the child.
+     * @return the child at the given index.
+     */
+    public MarkupElement getChild(int i) {
+        return children == null ? null : children.get(i);
+    }
+
+    /**
+     * Get a bails child from the MarkupElement.
+     * @param i the index of the bails child.
+     * @return the bails child at the given index.
+     */
+    public MarkupElement getBailsChild(int i) {
+        return bailsChildren == null ? null : bailsChildren.get(i);
+    }
+
     /*
         Getters and Setters.
      */
