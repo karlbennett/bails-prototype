@@ -28,6 +28,9 @@ public final class TestBailsStreamFactory {
     public static final String XML_DCOUMENT = XML_LINE_ONE + XML_LINE_TWO + XML_LINE_THREE + XML_LINE_FOUR
             + XML_LINE_FIVE + XML_LINE_SIX + XML_LINE_SEVEN;
 
+    public static final int CHILD_NUM = 5;
+    public static final int BAILS_CHILD_NUM = 1;
+
     public static final String TEST_OPEN_TAG = "<element>\n";
     public static final String TEST_OPEN_CLOSE_TAG = "<element/>\n";
     public static final String TEST_OPEN_TAG_WITH_ATTRIBUTES = "<element one=\"1\" two=\"2\" three=\"3\">\n";
