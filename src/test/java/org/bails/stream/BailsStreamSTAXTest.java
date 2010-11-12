@@ -22,7 +22,8 @@ public class BailsStreamSTAXTest {
 
     @Before
     public void initStream() throws FileNotFoundException {
-        stream = new BailsStreamSTAX(new ByteArrayInputStream(TestBailsStreamFactory.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
+        stream = new BailsStreamSTAX(new ByteArrayInputStream(
+                TestBailsStreamFactory.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
     }
 
     @After
