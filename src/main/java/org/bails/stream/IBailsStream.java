@@ -1,4 +1,4 @@
-package org.bails;
+package org.bails.stream;
 
 import java.util.Map;
 

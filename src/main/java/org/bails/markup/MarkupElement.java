@@ -1,4 +1,6 @@
-package org.bails;
+package org.bails.markup;
+
+import org.bails.stream.IBailsStream;
 
 import java.util.*;
 

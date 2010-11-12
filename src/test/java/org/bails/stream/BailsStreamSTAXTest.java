@@ -1,5 +1,7 @@
-package org.bails;
+package org.bails.stream;
 
+import junit.framework.Assert;
+import org.bails.markup.MarkupElement;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +11,6 @@ import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 
 import static junit.framework.Assert.*;
-import static org.bails.TestBailsStreamFactory.*;
 
 
 /**
@@ -21,7 +22,7 @@ public class BailsStreamSTAXTest {
 
     @Before
     public void initStream() throws FileNotFoundException {
-        stream = new BailsStreamSTAX(new ByteArrayInputStream(XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
+        stream = new BailsStreamSTAX(new ByteArrayInputStream(TestBailsStreamFactory.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
     }
 
     @After
@@ -69,12 +70,12 @@ public class BailsStreamSTAXTest {
 
     @Test
     public void testGetCurrentElement() throws Exception {
-        assertEquals("element text string is correct.", XML_LINE_ONE, stream.getCharSequence());
+        Assert.assertEquals("element text string is correct.", TestBailsStreamFactory.XML_LINE_ONE, stream.getCharSequence());
     }
 
     @Test
     public void testGetName() throws Exception {
-        assertEquals("element name is correct.", TEST_NAME, stream.getName());
+        Assert.assertEquals("element name is correct.", TestBailsStreamFactory.TEST_NAME, stream.getName());
     }
 
     @Test
@@ -82,9 +83,9 @@ public class BailsStreamSTAXTest {
         stream.next(); //   <element one="1" two="2" three="3">
 
         assertEquals("element has 3 attributes.", 3, stream.getAttributes().size());
-        assertNotNull("element attributes contains one.", stream.getAttributes().get(ELEMENT_ATTRIBUTE_ONE));
-        assertNotNull("element attributes contains two.", stream.getAttributes().get(ELEMENT_ATTRIBUTE_TWO));
-        assertNotNull("element attributes contains three.", stream.getAttributes().get(ELEMENT_ATTRIBUTE_THREE));
+        assertNotNull("element attributes contains one.", stream.getAttributes().get(TestBailsStreamFactory.ELEMENT_ATTRIBUTE_ONE));
+        assertNotNull("element attributes contains two.", stream.getAttributes().get(TestBailsStreamFactory.ELEMENT_ATTRIBUTE_TWO));
+        assertNotNull("element attributes contains three.", stream.getAttributes().get(TestBailsStreamFactory.ELEMENT_ATTRIBUTE_THREE));
     }
 
     @Test
@@ -92,7 +93,7 @@ public class BailsStreamSTAXTest {
         StringBuilder testString = new StringBuilder(0);
 
         // <element xmlns:bails='http://www.bails.org/'>\n
-        assertEquals("element one char sequence correct.", XML_LINE_ONE, stream.getCharSequence());
+        Assert.assertEquals("element one char sequence correct.", TestBailsStreamFactory.XML_LINE_ONE, stream.getCharSequence());
 
         stream.next();
         testString.append(stream.getCharSequence()); //     <element one='1' two='2' three='3'>
@@ -110,7 +111,7 @@ public class BailsStreamSTAXTest {
         testString.append(stream.getCharSequence()); //    <element>Some test two.
         stream.next();
         testString.append(stream.getCharSequence()); //    <element>Some test two.</element>\n
-        assertEquals("element three char sequence correct.", XML_LINE_THREE, testString.toString());
+        Assert.assertEquals("element three char sequence correct.", TestBailsStreamFactory.XML_LINE_THREE, testString.toString());
 
         testString.setLength(0);
         stream.next();
@@ -119,14 +120,14 @@ public class BailsStreamSTAXTest {
         testString.append(stream.getCharSequence()); //    <element bails:id='test_element'>Some text three.
         stream.next();
         testString.append(stream.getCharSequence()); //    <element bails:id='test_element'>Some text three.</element>\n
-        assertEquals("element four char sequence correct.", XML_LINE_FOUR, testString.toString());
+        Assert.assertEquals("element four char sequence correct.", TestBailsStreamFactory.XML_LINE_FOUR, testString.toString());
 
         testString.setLength(0);
         stream.next();
         testString.append(stream.getCharSequence()); //    <element>
         stream.next();
         testString.append(stream.getCharSequence()); //    <element></element>\n
-        assertEquals("element five char sequence correct.", XML_LINE_FIVE, testString.toString());
+        Assert.assertEquals("element five char sequence correct.", TestBailsStreamFactory.XML_LINE_FIVE, testString.toString());
 
         // Can't yet handle open closed elements.
         testString.setLength(0);
@@ -134,18 +135,18 @@ public class BailsStreamSTAXTest {
         testString.append(stream.getCharSequence()); //    <element>
         stream.next();
         testString.append(stream.getCharSequence()); //    <element></element>\n
-        assertEquals("element six char sequence correct.", XML_LINE_FIVE, testString.toString());
+        Assert.assertEquals("element six char sequence correct.", TestBailsStreamFactory.XML_LINE_FIVE, testString.toString());
 
 
         stream.next(); // </element>
-        assertEquals("element seven char sequence correct.", XML_LINE_SEVEN, stream.getCharSequence());
+        Assert.assertEquals("element seven char sequence correct.", TestBailsStreamFactory.XML_LINE_SEVEN, stream.getCharSequence());
     }
 
     @Test
     public void testIntegrationTest() throws Exception {
         MarkupElement markupElement = new MarkupElement(stream);
 
-        assertEquals("element children correct.", CHILD_NUM, markupElement.getChildren().size());
-        assertEquals("element bails children correct.", BAILS_CHILD_NUM, markupElement.getBailsChildren().size());
+        Assert.assertEquals("element children correct.", TestBailsStreamFactory.CHILD_NUM, markupElement.getChildren().size());
+        Assert.assertEquals("element bails children correct.", TestBailsStreamFactory.BAILS_CHILD_NUM, markupElement.getBailsChildren().size());
     }
 }

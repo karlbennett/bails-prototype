@@ -1,12 +1,15 @@
-package org.bails;
+package org.bails.markup;
 
-import static org.bails.TestBailsStreamFactory.BAILS_STREAM_SELECTOR.*;
+import static org.bails.stream.TestBailsStreamFactory.BAILS_STREAM_SELECTOR.*;
 
+import org.bails.markup.MarkupElement;
+import org.bails.stream.IBailsStream;
+import org.bails.stream.TestBailsStreamFactory;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
-import static org.bails.TestBailsStreamFactory.*;
+import static org.bails.stream.TestBailsStreamFactory.*;
 
 /**
  * @author Karl Bennett

@@ -1,10 +1,13 @@
-package org.bails;
+package org.bails.stream;
+
+import org.junit.Ignore;
 
 import java.util.*;
 
 /**
  * @author Karl Bennett
  */
+@Ignore // Make sure this isn't mistaken for a unit test class.
 public final class TestBailsStreamFactory {
 
     private TestBailsStreamFactory() {

@@ -1,4 +1,4 @@
-package org.bails;
+package org.bails.stream;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -118,7 +118,7 @@ public class BailsStreamSTAX implements IBailsStream {
     */
 
     /**
-     * @see org.bails.IBailsStream#hashCode()
+     * @see IBailsStream#hashCode()
      */
     @Override
     public boolean hasNext() {
@@ -127,7 +127,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#next()
+     * @see IBailsStream#next()
      */
     @Override
     public void next() {
@@ -169,7 +169,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#close()
+     * @see IBailsStream#close()
      */
     @Override
     public void close() {
@@ -181,7 +181,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#isOpenTag()
+     * @see IBailsStream#isOpenTag()
      */
     @Override
     public boolean isOpenTag() {
@@ -194,7 +194,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#isOpenCloseTag()
+     * @see IBailsStream#isOpenCloseTag()
      */
     @Override
     public boolean isOpenCloseTag() {
@@ -202,7 +202,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#isCharacters()
+     * @see IBailsStream#isCharacters()
      */
     @Override
     public boolean isCharacters() {
@@ -210,7 +210,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#getCharSequence()
+     * @see IBailsStream#getCharSequence()
      */
     @Override
     public CharSequence getCharSequence() {
@@ -219,7 +219,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#getName()
+     * @see IBailsStream#getName()
      */
     @Override
     public String getName() {
@@ -239,7 +239,7 @@ public class BailsStreamSTAX implements IBailsStream {
     }
 
     /**
-     * @see org.bails.IBailsStream#getAttributes()
+     * @see IBailsStream#getAttributes()
      */
     @Override
     public Map<String, Object> getAttributes() {
