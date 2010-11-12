@@ -9,7 +9,7 @@ import java.util.*;
  */
 public class Element {
 
-    public static final String BAILS_ID_NAME = "bails:id";
+    public static final String BAILS_ID_NAME = "bails:id"; // Bails attribute name. Quick dirty and going to change.
 
     private boolean bailsElement = false;
     private String bailsId;
@@ -24,44 +24,48 @@ public class Element {
     private CharSequence closeTag;
 
     public Element(IBailsStream stream) {
-        if (stream.isOpenTag()) {
+        if (stream.isOpenTag()) { // If the stream is currently pointing at an open tag...
 
-            this.openTag = stream.getCharSequence();
+            this.openTag = stream.getCharSequence(); // ...then set the open tag char sequence, ...
 
-            this.name = stream.getName();
-            this.attributes = stream.getAttributes();
+            this.name = stream.getName(); // ...set the name of this element, ...
+            this.attributes = stream.getAttributes(); // ...get any attributes the element might have, ...
 
-            findBailsId(this.attributes);
+            findBailsId(this.attributes); // ...check for any bails attributes, ... NOTE: Maybe move this into the stream?
 
-            stream.next();
+            stream.next(); // ...and after that get the next element.
 
             Element child = null;
+            // Process any child elements until we reach the closing tag for this element.
             while (!stream.isCloseTag()) {
 
-                child = new Element(stream);
+                child = new Element(stream); // Take the child element.
 
-                this.children.add(child);
+                this.children.add(child); // Add to this elements children.
+                // Also if the child is a bails element add it to the bails children list.
                 if (child.isBailsElement()) this.bailsChildren.add(child);
 
-                stream.next();
+                stream.next(); // Move to the next element.
             }
 
+            // Once we have reached the closing tag set the close tag char sequence.
             this.closeTag = stream.getCharSequence();
-        } else if (stream.isOpenCloseTag()) {
+        } else if (stream.isOpenCloseTag()) {  // If the stream is currently pointing at an open close tag...
 
-            this.openTag = stream.getCharSequence();
-            this.openClose = true;
+            this.openTag = stream.getCharSequence(); // ...then set the open tag char sequence, ...
+            this.openClose = true; // ...set flag this to be an open close tag, ...
 
-            this.name = stream.getName();
-            this.attributes = stream.getAttributes();
+            this.name = stream.getName(); // ...set the name of this element, ...
+            this.attributes = stream.getAttributes(); // ...get any attributes the element might have, ...
 
-            findBailsId(this.attributes);
+            findBailsId(this.attributes); // ...check for any bails attributes.
 
-        } else if (stream.isCharacters()) {
+        } else if (stream.isCharacters()) { // If the stream is currently pointing at some characters...
 
-            this.chars = stream.getCharSequence();
-            this.charSequence = true;
+            this.chars = stream.getCharSequence(); // ...record the characters and...
+            this.charSequence = true; // ...set flag this as a character element.
 
+            // Die on any other element type.
         } else throw new RuntimeException("Tried to initialise an element of unknown type.");
     }
 
@@ -87,11 +91,11 @@ public class Element {
      */
 
     private void findBailsId(Map<String, Object> attributes) {
-        Object bailsId = attributes.get(BAILS_ID_NAME);
+        Object bailsId = attributes.get(BAILS_ID_NAME); // Try and request the Bails id attribute.
 
-        if (bailsId != null) {
-            this.bailsId = bailsId.toString();
-            this.bailsElement = true;
+        if (bailsId != null) { // If a Bails id was found...
+            this.bailsId = bailsId.toString(); // ...record it and...
+            this.bailsElement = true; // ...flag this as a Bails element.
         }
     }
 
