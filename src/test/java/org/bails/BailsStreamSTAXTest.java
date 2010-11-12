@@ -140,4 +140,12 @@ public class BailsStreamSTAXTest {
         stream.next(); // </element>
         assertEquals("element seven char sequence correct.", XML_LINE_SEVEN, stream.getCharSequence());
     }
+
+    @Test
+    public void testIntegrationTest() throws Exception {
+        Element element = new Element(stream);
+
+        assertEquals("element children correct.", CHILD_NUM, element.getChildren().size());
+        assertEquals("element bails children correct.", BAILS_CHILD_NUM, element.getBailsChildren().size());
+    }
 }
