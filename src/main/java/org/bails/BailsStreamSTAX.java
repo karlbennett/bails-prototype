@@ -19,10 +19,21 @@ import static javax.xml.stream.XMLStreamConstants.*;
  */
 public class BailsStreamSTAX implements IBailsStream {
 
+    private static final String SYSTEM_NEW_LINE = System.getProperty("line.separator");
+    private static final String UNIX_NEW_LINE = "\n";
+
+    private static final String SYSTEM_NEW_LINE_REGEXP = "(\\s*" + SYSTEM_NEW_LINE + "+\\s*)+";
+    private static final String UNIX_NEW_LINE_REGEXP = "(\\s*" + UNIX_NEW_LINE + "+\\s*)+";
+
     private XMLInputFactory factory;
     private XMLEventReader parser;
 
     private XMLEvent currentEvent;
+
+    private String preWhiteSpace = "";
+    private String postWhiteSpace = "";
+
+    private StringBuilder currentEventString = new StringBuilder(0);
 
     private Map<String, Object> attributes;
 
@@ -37,6 +48,38 @@ public class BailsStreamSTAX implements IBailsStream {
         }
     }
 
+    /*
+       Convenience methods.
+    */
+
+    /**
+     * Check to see if the next even is just a new line character. If so add it to the end of the last events string.
+     */
+    private void checkForNewLine() {
+
+        preWhiteSpace = "";
+        postWhiteSpace = "";
+
+        if (hasNext()) {
+            try {
+                XMLEvent event = parser.peek();
+                String eventString = event.toString();
+
+                if (eventString.matches(UNIX_NEW_LINE_REGEXP) || eventString.matches(SYSTEM_NEW_LINE_REGEXP)) {
+                    preWhiteSpace = eventString.substring(eventString.indexOf('\n') + 1);
+                    postWhiteSpace = eventString.substring(0, eventString.indexOf('\n') + 1);
+                    parser.nextEvent();
+                }
+            } catch (XMLStreamException e) {
+                System.out.println("SORT THIS OUT!: " + e.getMessage());
+            }
+        }
+    }
+
+    /*
+       Override methods.
+    */
+
     @Override
     public boolean hasNext() {
         return currentEvent.getEventType() != END_DOCUMENT;
@@ -45,6 +88,7 @@ public class BailsStreamSTAX implements IBailsStream {
     @Override
     public void next() {
         try {
+            currentEventString.setLength(0);
             currentEvent = this.parser.nextEvent();
 
             while (currentEvent.getEventType() != START_ELEMENT
@@ -52,6 +96,13 @@ public class BailsStreamSTAX implements IBailsStream {
                     && currentEvent.getEventType() != END_ELEMENT) {
                 currentEvent = this.parser.nextEvent();
             }
+
+            currentEventString.append(preWhiteSpace);
+            currentEventString.append(currentEvent);
+
+            checkForNewLine();
+
+            currentEventString.append(postWhiteSpace);
 
             if (currentEvent.getEventType() == START_ELEMENT) {
                 attributes = new HashMap<String, Object>();
@@ -104,14 +155,11 @@ public class BailsStreamSTAX implements IBailsStream {
 
     @Override
     public CharSequence getCurrentElement() {
-        return currentEvent.toString();
+        return currentEventString.toString();
     }
 
     @Override
     public String getName() {
-        StartElement startElement = null;
-        EndElement endElement = null;
-
         String name = "";
 
         switch (currentEvent.getEventType()) {

@@ -4,8 +4,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
 
 import static junit.framework.Assert.*;
 
@@ -14,7 +15,17 @@ import static junit.framework.Assert.*;
  */
 public class BailsStreamSTAXTest {
 
-    private static final String ROOT_START_ELEMENT = "<element xmlns:bails='http://www.bails.org/'>";
+    private static final String XML_LINE_ONE =      "<element xmlns:bails='http://www.bails.org/'>\n";
+    private static final String XML_LINE_TWO =      "    <element one='1' two='2' three='3'>Some text one.</element>\n";
+    private static final String XML_LINE_THREE =    "    <element>Some test two.</element>\n";
+    private static final String XML_LINE_FOUR =     "    <element bails:id='test_element'>Some text three.</element>\n";
+    private static final String XML_LINE_FIVE =     "    <element></element>\n";
+    private static final String XML_LINE_SIX =      "    <element/>\n";
+    private static final String XML_LINE_SEVEN =    "</element>";
+
+    private static final String XML_DCOUMENT = XML_LINE_ONE + XML_LINE_TWO + XML_LINE_THREE + XML_LINE_FOUR
+            + XML_LINE_FIVE + XML_LINE_SIX + XML_LINE_SEVEN;
+
     private static final String ROOT_START_ELEMENT_NAME = "element";
     private static final String ELEMENT_ATTRIBUTE_ONE = "one";
     private static final String ELEMENT_ATTRIBUTE_TWO = "two";
@@ -24,7 +35,7 @@ public class BailsStreamSTAXTest {
 
     @Before
     public void initStream() throws FileNotFoundException {
-        stream = new BailsStreamSTAX(new FileInputStream("src/test/resources/test.xml"));
+        stream = new BailsStreamSTAX(new ByteArrayInputStream(XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
     }
 
     @After
@@ -50,7 +61,6 @@ public class BailsStreamSTAXTest {
 
     @Test
     public void testIsCloseTag() throws Exception {
-        stream.next(); // <element>
         stream.next(); //   <element one="1" two="2" three="3">
         stream.next(); //       Some text one.
         stream.next(); //   </element>
@@ -74,7 +84,7 @@ public class BailsStreamSTAXTest {
 
     @Test
     public void testGetCurrentElement() throws Exception {
-        assertEquals("element text string is correct.", ROOT_START_ELEMENT, stream.getCurrentElement());
+        assertEquals("element text string is correct.", XML_LINE_ONE, stream.getCurrentElement());
     }
 
     @Test
@@ -91,5 +101,59 @@ public class BailsStreamSTAXTest {
         assertNotNull("element attributes contains one.", stream.getAttributes().get(ELEMENT_ATTRIBUTE_ONE));
         assertNotNull("element attributes contains two.", stream.getAttributes().get(ELEMENT_ATTRIBUTE_TWO));
         assertNotNull("element attributes contains three.", stream.getAttributes().get(ELEMENT_ATTRIBUTE_THREE));
+    }
+
+    @Test
+    public void testExpectedCharSequences() throws Exception {
+        StringBuilder testString = new StringBuilder(0);
+
+        // <element xmlns:bails='http://www.bails.org/'>\n
+        assertEquals("element one char sequence correct.", XML_LINE_ONE, stream.getCurrentElement());
+
+        stream.next();
+        testString.append(stream.getCurrentElement()); //     <element one='1' two='2' three='3'>
+        stream.next();
+        testString.append(stream.getCurrentElement()); //     <element one='1' two='2' three='3'>Some text one.
+        stream.next();
+        testString.append(stream.getCurrentElement()); //     <element one='1' two='2' three='3'>Some text one.</element>\n
+        assertTrue("element two match correct.", testString.toString().matches(
+                "^\\s+<element (one='1'|two='2'|three='3') (one='1'|two='2'|three='3') (one='1'|two='2'|three='3')>Some text one.</element>\\n"));
+
+        testString.setLength(0);
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element>
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element>Some test two.
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element>Some test two.</element>\n
+        assertEquals("element three char sequence correct.", XML_LINE_THREE, testString.toString());
+
+        testString.setLength(0);
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element bails:id='test_element'>
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element bails:id='test_element'>Some text three.
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element bails:id='test_element'>Some text three.</element>\n
+        assertEquals("element four char sequence correct.", XML_LINE_FOUR, testString.toString());
+
+        testString.setLength(0);
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element>
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element></element>\n
+        assertEquals("element five char sequence correct.", XML_LINE_FIVE, testString.toString());
+
+        // Can't yet handle open closed elements.
+        testString.setLength(0);
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element>
+        stream.next();
+        testString.append(stream.getCurrentElement()); //    <element></element>\n
+        assertEquals("element six char sequence correct.", XML_LINE_FIVE, testString.toString());
+
+
+        stream.next(); // </element>
+        assertEquals("element seven char sequence correct.", XML_LINE_SEVEN, stream.getCurrentElement());
     }
 }
