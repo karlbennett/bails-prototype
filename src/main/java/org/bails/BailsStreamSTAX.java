@@ -85,6 +85,11 @@ public class BailsStreamSTAX implements IBailsStream {
         }
     }
 
+    /**
+     * Pars the STAX attributes into the Bails attribute map.
+     * @param element a STAX @link javax.xml.stream.events.StartElement that may or may not contain attributes.
+     * @return a map of string object key value pairs that represent the Bails attributes.
+     */
     private Map<String, Object> parsAttributes(StartElement element) {
         Map<String, Object> attributes = new HashMap<String, Object>(); // Initialise the attributes map.
 
