@@ -4,26 +4,14 @@ import static org.bails.TestBailsStreamFactory.BAILS_STREAM_SELECTOR.*;
 
 import org.junit.Test;
 
-import java.util.Map;
-
 import static junit.framework.Assert.*;
 import static org.mockito.Mockito.*;
+import static org.bails.TestBailsStreamFactory.*;
 
 /**
  * @author Karl Bennett
  */
 public class ElementTest {
-
-    private static final String TEST_CHAR_SEQUENCE = TestBailsStreamFactory.TEST_CHAR_SEQUENCE;
-    private static final String TEST_NAME = TestBailsStreamFactory.TEST_NAME;
-    private static final String TEST_OPEN_TAG = TestBailsStreamFactory.TEST_OPEN_TAG;
-    private static final String TEST_OPEN_CLOSE_TAG = TestBailsStreamFactory.TEST_CLOSE_TAG;
-    private static final String TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES =
-            TestBailsStreamFactory.TEST_OPEN_TAG_WITH_ATTRIBUTES;
-    private static final String TEST_CLOSE_TAG = TestBailsStreamFactory.TEST_CLOSE_TAG;
-    private static final Map<String, Object> TEST_ATTRIBUTES = TestBailsStreamFactory.TEST_ATTRIBUTES;
-    private static final Map<String, Object> TEST_ATTRIBUTES_WITH_BAILS_ID =
-            TestBailsStreamFactory.TEST_ATTRIBUTES_WITH_BAILS_ID;
 
     @Test
     public void testCharSequenceElement() throws Exception {
