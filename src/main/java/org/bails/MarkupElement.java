@@ -7,7 +7,7 @@ import java.util.*;
  *
  * @author Karl Bennett
  */
-public class Element {
+public class MarkupElement {
 
     public static final String BAILS_ID_NAME = "bails:id"; // Bails attribute name. Quick dirty and going to change.
 
@@ -19,11 +19,11 @@ public class Element {
     private CharSequence chars;
     private String name;
     private Map<String, Object> attributes = new HashMap<String, Object>();
-    private List<Element> children = new ArrayList<Element>();
-    private List<Element> bailsChildren = new ArrayList<Element>();
+    private List<MarkupElement> children = new ArrayList<MarkupElement>();
+    private List<MarkupElement> bailsChildren = new ArrayList<MarkupElement>();
     private CharSequence closeTag;
 
-    public Element(IBailsStream stream) {
+    public MarkupElement(IBailsStream stream) {
         if (stream.isOpenTag()) { // If the stream is currently pointing at an open tag...
 
             this.openTag = stream.getCharSequence(); // ...then set the open tag char sequence, ...
@@ -35,11 +35,11 @@ public class Element {
 
             stream.next(); // ...and after that get the next element.
 
-            Element child = null;
+            MarkupElement child = null;
             // Process any child elements until we reach the closing tag for this element.
             while (!stream.isCloseTag()) {
 
-                child = new Element(stream); // Take the child element.
+                child = new MarkupElement(stream); // Take the child element.
 
                 this.children.add(child); // Add to this elements children.
                 // Also if the child is a bails element add it to the bails children list.
@@ -73,17 +73,17 @@ public class Element {
     public String toString() {
         StringBuilder elementString = new StringBuilder(0);
 
-        if (isCharSequence()) {
+        if (isCharSequence()) { // If the MarkupElement is a character element just add it's chars to the output.
             elementString.append(chars);
-        } else if (isOpenClose()) {
+        } else if (isOpenClose()) { // If it an ope close tag it won't have any children so just add the open tag chars.
             elementString.append(getOpenTag());
-        } else {
-            elementString.append(getOpenTag());
-            for (Element child : children) elementString.append(child.toString());
-            elementString.append(getCloseTag());
+        } else { // If this an open tag it  may have children so...
+            elementString.append(getOpenTag()); // ...add the open tag to the output, ...
+            for (MarkupElement child : children) elementString.append(child.toString()); // ...add the child chars, ...
+            elementString.append(getCloseTag()); // ...then lastly add the close tag.
         }
 
-        return elementString.toString();
+        return elementString.toString(); // Return the complete string representation of the element.
     }
 
     /*
@@ -126,14 +126,14 @@ public class Element {
     }
 
     /**
-     * @return True if this Element class represents a openClose element e.g. <element/>.
+     * @return True if this MarkupElement class represents a openClose element e.g. <element/>.
      */
     public boolean isOpenClose() {
         return openClose;
     }
 
     /**
-     * @return True if this Element class represents a charSequence element e.g. "Some text".
+     * @return True if this MarkupElement class represents a charSequence element e.g. "Some text".
      */
     public boolean isCharSequence() {
         return charSequence;
@@ -155,16 +155,16 @@ public class Element {
     }
 
     /**
-     * @return The list of child elements within this Element class.
+     * @return The list of child elements within this MarkupElement class.
      */
-    public List<Element> getChildren() {
+    public List<MarkupElement> getChildren() {
         return children;
     }
 
     /**
-     * @return The list of Bails child elements within the Element class.
+     * @return The list of Bails child elements within the MarkupElement class.
      */
-    public List<Element> getBailsChildren() {
+    public List<MarkupElement> getBailsChildren() {
         return bailsChildren;
     }
 

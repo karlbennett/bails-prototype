@@ -143,9 +143,9 @@ public class BailsStreamSTAXTest {
 
     @Test
     public void testIntegrationTest() throws Exception {
-        Element element = new Element(stream);
+        MarkupElement markupElement = new MarkupElement(stream);
 
-        assertEquals("element children correct.", CHILD_NUM, element.getChildren().size());
-        assertEquals("element bails children correct.", BAILS_CHILD_NUM, element.getBailsChildren().size());
+        assertEquals("element children correct.", CHILD_NUM, markupElement.getChildren().size());
+        assertEquals("element bails children correct.", BAILS_CHILD_NUM, markupElement.getBailsChildren().size());
     }
 }
