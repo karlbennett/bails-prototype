@@ -16,6 +16,7 @@ public abstract class Element {
     private List<Element> children = new ArrayList<Element>();
     private int childIndex = 0;
     private String bailsId;
+    private StringBuilder renderedElement = new StringBuilder();
 
     protected Element() {
     }
@@ -111,6 +112,43 @@ public abstract class Element {
      */
     public void resetChildIndex() {
         childIndex = 0;
+    }
+
+    /**
+     * Clear the render string for this Element.
+     */
+    protected void clearRender() {
+        renderedElement.setLength(0);
+    }
+
+    /**
+     * Append some chars to the render string for this Element
+     * @param chars
+     */
+    protected void appendToRender(CharSequence chars) {
+        renderedElement.append(chars);
+    }
+
+    /**
+     * Render the children of the current Element.
+     */
+    protected void renderChildren() {
+        if (hasChildren()) {
+            for (MarkupElement childMarkup : getMarkupElement().getChildren()) {
+                if (childMarkup.isBailsElement()) {
+                    appendToRender(nextChild().render());
+                } else {
+                    appendToRender(childMarkup.toString());
+                }
+            }
+        }
+    }
+
+    /**
+     * @return the current render string for the Element.
+     */
+    protected String getRender() {
+        return renderedElement.toString();
     }
 
     /*

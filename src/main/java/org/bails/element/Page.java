@@ -9,11 +9,6 @@ import org.bails.stream.IBailsStream;
 public abstract class Page extends Element {
 
     public Page() {
-        super();
-    }
-
-    private Page(String bailsId) {
-        super(bailsId);
     }
 
     protected Page(IBailsStream stream) {
@@ -22,22 +17,14 @@ public abstract class Page extends Element {
 
     @Override
     public String render() {
-        StringBuilder renderedPage = new StringBuilder();
+        clearRender();
 
-        renderedPage.append(getMarkupElement().getOpenTag());
+        appendToRender(getMarkupElement().getOpenTag());
 
-        if (hasChildren()) {
-            for (MarkupElement childMarkup : getMarkupElement().getChildren()) {
-                if (childMarkup.isBailsElement()) {
-                    renderedPage.append(nextChild().render());
-                } else {
-                    renderedPage.append(childMarkup.toString());
-                }
-            }
-        }
+        renderChildren();
 
-        renderedPage.append(getMarkupElement().getCloseTag());
+        appendToRender(getMarkupElement().getCloseTag());
 
-        return renderedPage.toString();
+        return getRender();
     }
 }
