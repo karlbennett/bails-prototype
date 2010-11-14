@@ -1,5 +1,6 @@
-package org.bails.stream;
+package org.bails.test;
 
+import org.bails.stream.IBailsStream;
 import org.junit.Ignore;
 
 import java.util.*;
