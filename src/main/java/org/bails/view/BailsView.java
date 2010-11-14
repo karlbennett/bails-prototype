@@ -51,6 +51,8 @@ public class BailsView extends AbstractTemplateView {
 
         Page page = configuration.getPage(getUrl().replace("/", ""));
 
+        Configuration.populatePropteries(page, model);
+
         response.getWriter().write(page.render());
         response.getWriter().flush();
         response.getWriter().close();
