@@ -4,6 +4,7 @@ import org.bails.markup.MarkupElement;
 import org.bails.stream.IBailsStream;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,7 +13,6 @@ import java.util.List;
 public abstract class Element {
 
     private MarkupElement markupElement;
-    private int bailsMarkupElementIndex = 0;
     private List<Element> children = new ArrayList<Element>();
     private int childIndex = 0;
     private String bailsId;
@@ -25,37 +25,24 @@ public abstract class Element {
         this.bailsId = bailsId;
     }
 
+    protected Element(MarkupElement markupElement) {
+        this.markupElement = markupElement;
+    }
+
     protected Element(IBailsStream stream) {
-        markupElement = new MarkupElement(stream);
+        this.markupElement = new MarkupElement(stream);
+    }
+
+    protected Element(String bailsId, IBailsStream stream) {
+        this.bailsId = bailsId;
+        this.markupElement = new MarkupElement(stream);
     }
 
     public void add(Element... childs) {
         if (childs.length == 1) {
-            MarkupElement bailsChildMarkupElement = markupElement.getBailsChild(bailsMarkupElementIndex++);
-
-            if (bailsChildMarkupElement.getBailsId().equals(childs[0].getBailsId())) {
                 children.add(childs[0]);
-                childs[0].setMarkupElement(bailsChildMarkupElement);
-            } else {
-                throw new RuntimeException("Bails Element id (" + childs[0].getBailsId()
-                            + ") does not match the id of it's related MarkupElement ("
-                            + bailsChildMarkupElement.getBailsId() + ").");
-            }
         } else if (childs.length > 1) {
-            MarkupElement bailsChildMarkupElement = null;
-
-            for (Element child : children) {
-                bailsChildMarkupElement = markupElement.getBailsChild(bailsMarkupElementIndex++);
-
-                if (bailsChildMarkupElement.getBailsId().equals(childs[0].getBailsId())) {
-                    children.add(child);
-                    child.setMarkupElement(bailsChildMarkupElement);
-                } else {
-                    throw new RuntimeException("Bails Element id (" + child.getBailsId()
-                            + ") does not match the id of it's related MarkupElement ("
-                            + bailsChildMarkupElement.getBailsId() + ").");
-                }
-            }
+                children.addAll(Arrays.asList(childs));
         }
     }
 
@@ -72,6 +59,7 @@ public abstract class Element {
 
     /**
      * Get a child from the Element.
+     *
      * @param i the index of the child.
      * @return the child at the given index.
      */
@@ -123,6 +111,7 @@ public abstract class Element {
 
     /**
      * Append some chars to the render string for this Element
+     *
      * @param chars
      */
     protected void appendToRender(CharSequence chars) {
@@ -133,13 +122,14 @@ public abstract class Element {
      * Render the children of the current Element.
      */
     protected void renderChildren() {
-        if (hasChildren()) {
-            for (MarkupElement childMarkup : getMarkupElement().getChildren()) {
-                if (childMarkup.isBailsElement()) {
-                    appendToRender(nextChild().render());
-                } else {
-                    appendToRender(childMarkup.toString());
-                }
+        Element child = null;
+        for (MarkupElement childMarkup : getMarkupElement().getChildren()) {
+            if (childMarkup.isBailsElement()) {
+                child = nextChild();
+                child.setMarkupElement(childMarkup);
+                appendToRender(child.render());
+            } else {
+                appendToRender(childMarkup.toString());
             }
         }
     }
@@ -175,11 +165,11 @@ public abstract class Element {
     }
 
     /**
-     * Set the MarkupElement for this bails Element. This method should never be called publicly.
+     * Set the MarkupElement for this bails Element.
      *
      * @param markupElement the new MarkupElement.
      */
-    private void setMarkupElement(MarkupElement markupElement) {
+    public void setMarkupElement(MarkupElement markupElement) {
         this.markupElement = markupElement;
     }
 
@@ -188,5 +178,38 @@ public abstract class Element {
      */
     public String getBailsId() {
         return bailsId;
+    }
+
+    /**
+     * Set the Bails Id. This should only ever be called in the constructor.
+     *
+     * @param bailsId for this Element.
+     */
+    public void setBailsId(String bailsId) {
+        this.bailsId = bailsId;
+    }
+
+    /*
+       Override methods.
+    */
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + " id: " + getBailsId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Element)) return false;
+
+        Element element = (Element) o;
+
+        return bailsId.equals(element.bailsId);
+    }
+
+    @Override
+    public int hashCode() {
+        return bailsId.hashCode();
     }
 }

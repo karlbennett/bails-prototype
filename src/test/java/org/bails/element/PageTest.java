@@ -2,13 +2,15 @@ package org.bails.element;
 
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
-import org.bails.stream.TestBailsStreamFactory;
+import org.bails.test.TestBailsStreamFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.Charset;
+
+import static junit.framework.Assert.*;
 
 /**
  * @author Karl Bennett
@@ -33,11 +35,22 @@ public class PageTest {
     public void testRender() throws Exception {
         Page testPage = new TestPage(stream);
 
+        assertEquals("page bails is correct", TestPage.class.getSimpleName(), testPage.getBailsId());
+
+        Page otherTestPage = new TestPage();
+
+        assertEquals("test pages equal", testPage, otherTestPage);
+
+        Page stubPage = new StubPage();
+
+        assertFalse("stub page not equal to test page", testPage.equals(stubPage));
+
         System.out.println(testPage.render());
     }
 
     private static class TestPage extends Page {
 
+        public TestPage() {}
 
         public TestPage(IBailsStream stream) {
             super(stream);
@@ -45,6 +58,8 @@ public class PageTest {
             add(new TestElement(TestBailsStreamFactory.TEST_BAILS_ID));
         }
     }
+
+    private static class StubPage extends Page {}
 
     private static class TestElement extends Element {
 

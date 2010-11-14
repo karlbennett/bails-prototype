@@ -2,7 +2,7 @@ package org.bails.element;
 
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
-import org.bails.stream.TestBailsStreamFactory;
+import org.bails.test.TestBailsStreamFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
