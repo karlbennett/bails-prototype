@@ -2,6 +2,7 @@ package org.bails.stream;
 
 import junit.framework.Assert;
 import org.bails.markup.MarkupElement;
+import org.bails.test.TestBailsStreamFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
