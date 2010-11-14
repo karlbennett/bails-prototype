@@ -12,6 +12,6 @@ public class BailsController {
 
     @RequestMapping("/index.html")
     public String index() {
-        return "/index";
+        return "PrototypePage";
     }
 }
