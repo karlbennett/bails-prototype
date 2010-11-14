@@ -14,17 +14,16 @@ import java.util.*;
  */
 public class Configuration {
 
-    private Set<String> pagePackages;
+    private String[] pagePackages;
 
     private Map<String, Class> pages = new HashMap<String, Class>();
 
     private Map<String, MarkupElement> markupElements = new HashMap<String, MarkupElement>();
 
+    public Configuration() {}
+
     public Configuration(String... pagePackages) {
-        this.pagePackages = new HashSet<String>(Arrays.asList(pagePackages));
-        for (String packageName : pagePackages) {
-            populatePages(packageName);
-        }
+        setPagePackages(pagePackages);
     }
 
     /*
@@ -119,8 +118,15 @@ public class Configuration {
     /**
      * @return a set of string contain the package names that should be scanned for pages.
      */
-    public Set<String> getPagePackages() {
+    public String[] getPagePackages() {
         return pagePackages;
+    }
+
+    public void setPagePackages(String... pagePackages) {
+        this.pagePackages = pagePackages;
+        for (String packageName : pagePackages) {
+            populatePages(packageName);
+        }
     }
 
     /**

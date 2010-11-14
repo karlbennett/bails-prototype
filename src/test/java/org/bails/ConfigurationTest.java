@@ -41,7 +41,7 @@ public class ConfigurationTest {
 
     @Test
     public void testGetPagePackages() throws Exception {
-        assertEquals("test package found", 1, configuration.getPagePackages().size());
+        assertEquals("test package found", 1, configuration.getPagePackages().length);
     }
 
     @Test
