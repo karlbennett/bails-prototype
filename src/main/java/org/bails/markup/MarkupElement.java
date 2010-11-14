@@ -71,23 +71,6 @@ public class MarkupElement {
         } else throw new RuntimeException("Tried to initialise an element of unknown type.");
     }
 
-    @Override
-    public String toString() {
-        StringBuilder elementString = new StringBuilder(0);
-
-        if (isCharSequence()) { // If the MarkupElement is a character element just add it's chars to the output.
-            elementString.append(chars);
-        } else if (isOpenClose()) { // If it an ope close tag it won't have any children so just add the open tag chars.
-            elementString.append(getOpenTag());
-        } else { // If this an open tag it  may have children so...
-            elementString.append(getOpenTag()); // ...add the open tag to the output, ...
-            for (MarkupElement child : children) elementString.append(child.toString()); // ...add the child chars, ...
-            elementString.append(getCloseTag()); // ...then lastly add the close tag.
-        }
-
-        return elementString.toString(); // Return the complete string representation of the element.
-    }
-
     /*
         Convenience methods.
      */
@@ -194,5 +177,26 @@ public class MarkupElement {
      */
     public CharSequence getCloseTag() {
         return closeTag;
+    }
+
+    /*
+       Override methods.
+    */
+
+    @Override
+    public String toString() {
+        StringBuilder elementString = new StringBuilder(0);
+
+        if (isCharSequence()) { // If the MarkupElement is a character element just add it's chars to the output.
+            elementString.append(chars);
+        } else if (isOpenClose()) { // If it an open close tag it won't have any children so just add the open tag chars.
+            elementString.append(getOpenTag());
+        } else { // If this an open tag it  may have children so...
+            elementString.append(getOpenTag()); // ...add the open tag to the output, ...
+            for (MarkupElement child : children) elementString.append(child.toString()); // ...add the child chars, ...
+            elementString.append(getCloseTag()); // ...then lastly add the close tag.
+        }
+
+        return elementString.toString(); // Return the complete string representation of the element.
     }
 }
