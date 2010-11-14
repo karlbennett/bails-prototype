@@ -7,10 +7,14 @@
                            http://www.springframework.org/schema/context
                            http://www.springframework.org/schema/context/spring-context.xsd">
 
+    <bean id="bailsConfiguration" class="org.bails.Configuration">
+        <property name="pagePackages" value="org.bails.prototype"/>
+    </bean>
+
     <bean id="bailsViewResolver" class="org.bails.view.BailsViewResolver">
         <property name="cache" value="false"/>
         <property name="prefix" value=""/>
-        <property name="suffix" value=".html"/>
+        <property name="suffix" value=""/>
         <property name="exposeSpringMacroHelpers" value="true"/>
         <property name="order" value="1">
             <description>
