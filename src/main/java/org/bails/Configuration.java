@@ -2,10 +2,12 @@ package org.bails;
 
 import org.bails.element.Page;
 import org.bails.markup.MarkupElement;
+import org.bails.property.Property;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
 
@@ -109,6 +111,22 @@ public class Configuration {
         }
 
         return page;
+    }
+
+    public static void populatePropteries(Page page, Map<String, Object> model) throws IllegalAccessException {
+
+        Object value = null;
+        Property property = null;
+        for (Field field : page.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+
+            value = model.get(field.getName());
+
+            if (value != null) {
+                property = (Property)field.get(page);
+                property.setValue(value);
+            } else throw new RuntimeException("Property " + field.getName() + " not found in the model.");
+        }
     }
 
     /*
