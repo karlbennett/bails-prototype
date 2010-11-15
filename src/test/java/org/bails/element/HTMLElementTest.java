@@ -41,7 +41,10 @@ public class HTMLElementTest {
 
         public TestPage(IBailsStream stream) {
             super(stream);
+        }
 
+        @Override
+        public void initialise() {
             add(new HTMLElement(TestBailsStreamFactory.TEST_BAILS_ID, "Some new text."));
         }
     }

@@ -10,9 +10,10 @@ import org.bails.property.Property;
  */
 public class PrototypePage extends Page {
 
-    private Property message = new Property();
+    private String message;
 
-    public PrototypePage() {
+    @Override
+    public void initialise() {
         Element body = new HTMLElement("body");
         body.add(new HTMLElement("message", message));
         add(body);

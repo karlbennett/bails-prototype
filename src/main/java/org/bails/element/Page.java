@@ -10,6 +10,8 @@ import org.bails.stream.IBailsStream;
  */
 public abstract class Page extends Element {
 
+    private boolean initialised = false;
+
     public Page() {
         // Set the bailsId for the Page to the simple name of the class.
         setBailsId(getClass().getSimpleName());
@@ -25,8 +27,26 @@ public abstract class Page extends Element {
         setBailsId(getClass().getSimpleName());
     }
 
+    /*
+        Abstract methods.
+     */
+
+    /**
+     * Method should be overridden and all initialisation and view logic should be placed within.
+     */
+    public abstract void initialise();
+
+    /*
+       Override methods.
+    */
+
     @Override
     public String render() {
+        if (!initialised) {
+            initialised = true;
+            initialise();
+        }
+
         clearRender();
 
         appendToRender(getMarkupElement().getOpenTag());

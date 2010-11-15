@@ -116,15 +116,13 @@ public class Configuration {
     public static void populatePropteries(Page page, Map<String, Object> model) throws IllegalAccessException {
 
         Object value = null;
-        Property property = null;
         for (Field field : page.getClass().getDeclaredFields()) {
             field.setAccessible(true);
 
             value = model.get(field.getName());
 
             if (value != null) {
-                property = (Property)field.get(page);
-                property.setValue(value);
+                field.set(page, value);
             } else throw new RuntimeException("Property " + field.getName() + " not found in the model.");
         }
     }

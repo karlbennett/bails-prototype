@@ -12,7 +12,8 @@ import org.junit.Ignore;
 @Ignore
 public class TestPage extends Page {
 
-    public TestPage() {
+    @Override
+    public void initialise() {
         Element body = new HTMLElement("body");
         body.add(new HTMLElement("message", "The text in this tag has been successfully replaced."));
         add(body);

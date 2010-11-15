@@ -54,12 +54,20 @@ public class PageTest {
 
         public TestPage(IBailsStream stream) {
             super(stream);
+        }
 
+        @Override
+        public void initialise() {
             add(new TestElement(TestBailsStreamFactory.TEST_BAILS_ID));
         }
     }
 
-    private static class StubPage extends Page {}
+    private static class StubPage extends Page {
+
+        @Override
+        public void initialise() {
+        }
+    }
 
     private static class TestElement extends Element {
 
