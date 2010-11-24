@@ -2,7 +2,10 @@ package org.bails.markup;
 
 import org.bails.stream.IBailsStream;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class gives an object representation of a tag within bails markup.
@@ -21,11 +24,18 @@ public class MarkupElement {
     private CharSequence chars;
     private String name;
     private Map<String, Object> attributes = new HashMap<String, Object>();
+    private MarkupElement parent;
     private List<MarkupElement> children = new ArrayList<MarkupElement>();
-    private List<MarkupElement> bailsChildren = new ArrayList<MarkupElement>();
     private CharSequence closeTag;
 
+    public MarkupElement() {
+    }
+
     public MarkupElement(IBailsStream stream) {
+        addChildren(stream);
+    }
+
+    public MarkupElement(IBailsStream stream, boolean old) {
         if (stream.isOpenTag()) { // If the stream is currently pointing at an open tag...
 
             this.openTag = stream.getCharSequence(); // ...then set the open tag char sequence, ...
@@ -44,8 +54,6 @@ public class MarkupElement {
                 child = new MarkupElement(stream); // Take the child element.
 
                 this.children.add(child); // Add to this elements children.
-                // Also if the child is a bails element add it to the bails children list.
-                if (child.isBailsElement()) this.bailsChildren.add(child);
 
                 stream.next(); // Move to the next element.
             }
@@ -75,6 +83,34 @@ public class MarkupElement {
         Convenience methods.
      */
 
+    protected void addChildren(IBailsStream stream) {
+        stream.next(); // Get the next element.
+
+        MarkupElement child = null;
+        // Process any child elements until we reach the closing tag for this element.
+        while (stream.hasNext() && !stream.isCloseTag()) {
+
+            switch (stream.getType()) {
+                case OPEN: {
+                    child = new TagElement(stream, stream.getCharSequence(), stream.getName(), stream.getAttributes());
+                    break;
+                }
+                case CHARACTERS: {
+                    child = new CharactersElement(stream);
+                    break;
+                }
+                case BAILS: {
+                    child = new BailsTagElement(stream, stream.getBailsId(), stream.getCharSequence(), stream.getName(),
+                            stream.getAttributes());
+                }
+            }
+
+            this.children.add(child); // Add to this elements children.
+
+            stream.next(); // Move to the next element.
+        }
+    }
+
     private void findBailsId(Map<String, Object> attributes) {
         Object bailsId = attributes.get(BAILS_ID_NAME); // Try and request the Bails id attribute.
 
@@ -86,20 +122,12 @@ public class MarkupElement {
 
     /**
      * Get a child from the MarkupElement.
+     *
      * @param i the index of the child.
      * @return the child at the given index.
      */
     public MarkupElement getChild(int i) {
         return children == null ? null : children.get(i);
-    }
-
-    /**
-     * Get a bails child from the MarkupElement.
-     * @param i the index of the bails child.
-     * @return the bails child at the given index.
-     */
-    public MarkupElement getBailsChild(int i) {
-        return bailsChildren == null ? null : bailsChildren.get(i);
     }
 
     /*
@@ -122,7 +150,7 @@ public class MarkupElement {
 
     /**
      * @return Get the character sequence representation of this elements opening tag e.g. For <element></element> this
-     * would return "<element>".
+     *         would return "<element>".
      */
     public CharSequence getOpenTag() {
         return openTag;
@@ -151,10 +179,14 @@ public class MarkupElement {
 
     /**
      * @return The list of attributes for this element e.g. For <element one="1"/> this would return map containing a
-     * key of "one" with a matching value of 1.
+     *         key of "one" with a matching value of 1.
      */
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    public MarkupElement getParent() {
+        return parent;
     }
 
     /**
@@ -165,15 +197,8 @@ public class MarkupElement {
     }
 
     /**
-     * @return The list of Bails child elements within the MarkupElement class.
-     */
-    public List<MarkupElement> getBailsChildren() {
-        return bailsChildren;
-    }
-
-    /**
      * @return Get the character sequence representation of this elements closing tag e.g. For <element></element> this
-     * would return "</element>".
+     *         would return "</element>".
      */
     public CharSequence getCloseTag() {
         return closeTag;
@@ -185,6 +210,15 @@ public class MarkupElement {
 
     @Override
     public String toString() {
+        StringBuilder elementString = new StringBuilder(0);
+
+        for (MarkupElement child : children)
+            elementString.append(child.toString()); // Run to string across all the children.
+
+        return elementString.toString(); // Return the complete string representation of the element.
+    }
+
+    public String oldToString() {
         StringBuilder elementString = new StringBuilder(0);
 
         if (isCharSequence()) { // If the MarkupElement is a character element just add it's chars to the output.

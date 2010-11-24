@@ -24,6 +24,8 @@ public interface IBailsStream {
      */
     public void close();
 
+    public ELEMENT_TYPE getType();
+
     /**
      * @return true if the current element is an opening tag.
      */
@@ -59,4 +61,14 @@ public interface IBailsStream {
      * @return the attributes related to the current element if it contains attributes otherwise null.
      */
     public Map<String, Object> getAttributes();
+
+    /**
+     * @return true if the current tag has a bails id.
+     */
+    public boolean isBailsTag();
+
+    /**
+     * @return the bails id for this element.
+     */
+    public String getBailsId();
 }

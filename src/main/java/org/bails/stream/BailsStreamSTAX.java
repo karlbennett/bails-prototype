@@ -1,5 +1,7 @@
 package org.bails.stream;
 
+import org.bails.markup.TagElement;
+
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -43,12 +45,16 @@ public class BailsStreamSTAX implements IBailsStream {
 
     private Map<String, Object> attributes; // The attributes for the current xml event.
 
+    private boolean bailsTag = false;
+
+    private ELEMENT_TYPE type;
+
     public BailsStreamSTAX(InputStream stream) {
         XMLInputFactory factory = XMLInputFactory.newInstance(); // Get a new STAX factory class.
 
         try {
             this.parser = factory.createXMLEventReader(stream); // Get a new STAX event reader.
-            next(); // Initialise the stream so that the it starts with data.
+//            next(); // Initialise the stream so that the it starts with data.
         } catch (XMLStreamException e) {
             System.out.println("SORT THIS OUT!: " + e.getMessage());
         }
@@ -87,6 +93,7 @@ public class BailsStreamSTAX implements IBailsStream {
 
     /**
      * Pars the STAX attributes into the Bails attribute map.
+     *
      * @param element a STAX @link javax.xml.stream.events.StartElement that may or may not contain attributes.
      * @return a map of string object key value pairs that represent the Bails attributes.
      */
@@ -100,14 +107,17 @@ public class BailsStreamSTAX implements IBailsStream {
         while (attributeIterator.hasNext()) { // Iterate over the attributes...
             attribute = attributeIterator.next(); // ...recording each one, ...
 
-            QName name = attribute.getName(); // ...taking the name then...
+            QName qName = attribute.getName(); // ...taking the qName then...
 
-            // Recording adding that name and value into the attribute map.
+            // ...recording the name as a string.
             // A check is done on the attribute prefix. If it exists it is added to the attributes name separated by a
             // colon (:).
-            attributes.put(name.getPrefix().equals("") ? name.getLocalPart() :
-                    name.getPrefix() + ":" + name.getLocalPart(),
-                    attribute.getValue());
+            String nameString = qName.getPrefix().equals("") ? qName.getLocalPart() :
+                    qName.getPrefix() + ":" + qName.getLocalPart();
+
+            bailsTag = TagElement.BAILS_ID_NAME.equals(nameString); // Check if this is a bails id attribute and tag.
+
+            attributes.put(nameString, attribute.getValue());
         }
 
         return attributes;
@@ -144,6 +154,12 @@ public class BailsStreamSTAX implements IBailsStream {
                 currentEvent = this.parser.nextEvent();
             }
 
+            switch (currentEvent.getEventType()) {
+                case START_ELEMENT : type = ELEMENT_TYPE.OPEN; break;
+                case END_ELEMENT : type = ELEMENT_TYPE.CLOSE; break;
+                case CHARACTERS : type = ELEMENT_TYPE.CHARACTERS;
+            }
+
             // Add the white space that should be at the start of the char sequence.
             currentEventString.append(preWhiteSpace);
             currentEventString.append(currentEvent); // Add char sequence.
@@ -159,6 +175,8 @@ public class BailsStreamSTAX implements IBailsStream {
             if (currentEvent.getEventType() == START_ELEMENT) {
 
                 attributes = parsAttributes((StartElement) currentEvent); // Pars the start events attributes.
+
+                if(bailsTag) type = ELEMENT_TYPE.BAILS; // If this is a bails tag set it to the correct type.
 
             } else { // Otherwise there should be no attributes.
                 attributes = null;
@@ -178,6 +196,11 @@ public class BailsStreamSTAX implements IBailsStream {
         } catch (XMLStreamException e) {
             System.out.println("SORT THIS OUT!: " + e.getMessage());
         }
+    }
+
+    @Override
+    public ELEMENT_TYPE getType() {
+        return type;
     }
 
     /**
@@ -244,5 +267,15 @@ public class BailsStreamSTAX implements IBailsStream {
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
+    }
+
+    @Override
+    public boolean isBailsTag() {
+        return bailsTag;
+    }
+
+    @Override
+    public String getBailsId() {
+        return (String) attributes.get(TagElement.BAILS_ID_NAME);
     }
 }
