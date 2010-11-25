@@ -17,10 +17,18 @@ public class TagElement extends MarkupElement {
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private CharSequence closeTag;
 
+    private boolean openClose = false; // Indicates whether if this is an openClose tag or not which effects the toString method.
+
     public TagElement(IBailsStream stream, CharSequence openTag, String name, Map<String, Object> attributes) {
+        this(stream, openTag, name, attributes, false);
+    }
+
+    public TagElement(IBailsStream stream, CharSequence openTag, String name, Map<String, Object> attributes,
+                      boolean openClose) {
         this.openTag = openTag;
         this.name = name;
         this.attributes = attributes;
+        this.openClose = openClose;
 
         addChildren(stream);
 
@@ -60,6 +68,13 @@ public class TagElement extends MarkupElement {
      */
     public CharSequence getCloseTag() {
         return closeTag;
+    }
+
+    /**
+     * @return true if this TagElement is an openClose tag.
+     */
+    public boolean isOpenClose() {
+        return openClose;
     }
 
     /*

@@ -1,35 +1,61 @@
 package org.bails.markup;
 
-import static org.bails.test.TestBailsStreamFactory.BAILS_STREAM_SELECTOR.*;
-
+import org.bails.stream.BailsStreamSTAX;
+import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
-import org.bails.test.TestBailsStreamFactory;
+import org.bails.test.TestBailsTestUtil;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.nio.charset.Charset;
+
 import static junit.framework.Assert.*;
+import static org.bails.test.TestBailsTestUtil.*;
 import static org.mockito.Mockito.*;
-import static org.bails.test.TestBailsStreamFactory.*;
+
 
 /**
  * @author Karl Bennett
  */
 public class MarkupElementTest {
 
+    private IBailsStream stream;
+
+    @Before
+    public void initStream() throws FileNotFoundException {
+        stream = new BailsStreamSTAX(new ByteArrayInputStream(
+                TestBailsTestUtil.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
+    }
+
+    @After
+    public void clearStream() {
+        stream.close();
+        stream = null;
+    }
+
+    @Test
+    public void initialiseMarkupElement() throws Exception {
+        MarkupElement element = new MarkupElement(stream);
+    }
+
     @Test
     public void testCharSequenceElement() throws Exception {
         IBailsStream stream = mock(IBailsStream.class);
 
-        when(stream.isCharacters()).thenReturn(true);
-        when(stream.isOpenTag()).thenReturn(false);
-        when(stream.isOpenCloseTag()).thenReturn(false);
-        when(stream.isCloseTag()).thenReturn(false);
+        when(stream.getType()).thenReturn(ELEMENT_TYPE.CHARACTERS);
+        when(stream.hasNext()).thenReturn(true).thenReturn(false);
 
         when(stream.getCharSequence()).thenReturn(TEST_CHAR_SEQUENCE);
 
         MarkupElement markupElement = new MarkupElement(stream);
 
+        verify(stream, times(2)).next();
+        verify(stream, times(2)).hasNext();
+        verify(stream, times(2)).getType();
         verify(stream, times(1)).getCharSequence();
-        verify(stream, never()).next();
 
         assertEquals("char sequence equals", TEST_CHAR_SEQUENCE, markupElement.toString());
     }
@@ -38,165 +64,51 @@ public class MarkupElementTest {
     public void testOpenCloseElement() throws Exception {
         IBailsStream stream = mock(IBailsStream.class);
 
-        when(stream.isCharacters()).thenReturn(false);
-        when(stream.isOpenTag()).thenReturn(false);
-        when(stream.isOpenCloseTag()).thenReturn(true);
-        when(stream.isCloseTag()).thenReturn(false);
+        when(stream.getType()).thenReturn(ELEMENT_TYPE.OPENCLOSE);
+        when(stream.hasNext()).thenReturn(true).thenReturn(false);
 
-        when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG);
+        when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG).thenReturn("");
         when(stream.getName()).thenReturn(TEST_NAME);
 
         MarkupElement markupElement = new MarkupElement(stream);
 
-        verify(stream, times(1)).getCharSequence();
+        verify(stream, times(3)).next();
+        verify(stream, times(3)).hasNext();
+        verify(stream, times(2)).getType();
+        verify(stream, times(2)).getCharSequence();
         verify(stream, times(1)).getName();
         verify(stream, times(1)).getAttributes();
-        verify(stream, never()).next();
+
+        TagElement child = (TagElement)markupElement.getChild(0);
 
         assertEquals("char sequence equals", TEST_OPEN_CLOSE_TAG, markupElement.toString());
-        assertEquals("name equals", TEST_NAME, markupElement.getName());
+        assertEquals("name equals", TEST_NAME, child.getName());
     }
 
     @Test
     public void testOpenCloseElementWithAttributes() throws Exception {
         IBailsStream stream = mock(IBailsStream.class);
 
-        when(stream.isCharacters()).thenReturn(false);
-        when(stream.isOpenTag()).thenReturn(false);
-        when(stream.isOpenCloseTag()).thenReturn(true);
-        when(stream.isCloseTag()).thenReturn(false);
+        when(stream.getType()).thenReturn(ELEMENT_TYPE.OPENCLOSE);
+        when(stream.hasNext()).thenReturn(true).thenReturn(false);
 
-        when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES);
+        when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES).thenReturn("");
         when(stream.getName()).thenReturn(TEST_NAME);
         when(stream.getAttributes()).thenReturn(TEST_ATTRIBUTES);
 
         MarkupElement markupElement = new MarkupElement(stream);
 
-        verify(stream, times(1)).getCharSequence();
+        verify(stream, times(3)).next();
+        verify(stream, times(3)).hasNext();
+        verify(stream, times(2)).getType();
+        verify(stream, times(2)).getCharSequence();
         verify(stream, times(1)).getName();
         verify(stream, times(1)).getAttributes();
-        verify(stream, never()).next();
+
+        TagElement child = (TagElement)markupElement.getChild(0);
 
         assertEquals("char sequence equals", TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES, markupElement.toString());
-        assertEquals("name equals", TEST_NAME, markupElement.getName());
-        assertEquals("attributes equals", TEST_ATTRIBUTES, markupElement.getAttributes());
-    }
-
-    @Test
-    public void testOpenTagWithCharSequenceChild() throws Exception {
-        MarkupElement markupElement = new MarkupElement(TestBailsStreamFactory.getNewBailsStream(CHAR_SEQUENCE_CHILD));
-
-        assertEquals("element open tag correct", TEST_OPEN_TAG, markupElement.getOpenTag());
-        assertEquals("element name correct", TEST_NAME, markupElement.getName());
-        assertEquals("element has a child", 1, markupElement.getChildren().size());
-        MarkupElement child = markupElement.getChildren().get(0);
-        assertTrue("element child is char sequence", child.isCharSequence());
-        assertEquals("element char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-        assertEquals("element close tag correct", TEST_CLOSE_TAG, markupElement.getCloseTag());
-    }
-
-    @Test
-    public void testOpenTagWithSingleElementChild() throws Exception {
-        MarkupElement markupElement = new MarkupElement(TestBailsStreamFactory.getNewBailsStream(SINGLE_ELEMENT_CHILD));
-
-        assertEquals("element open tag correct", TEST_OPEN_TAG, markupElement.getOpenTag());
-        assertEquals("element name correct", TEST_NAME, markupElement.getName());
-        assertEquals("element has a child", 1, markupElement.getChildren().size());
-        MarkupElement child = markupElement.getChildren().get(0);
-        assertFalse("element child is tag", child.isCharSequence());
-        assertEquals("element child open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child name correct", TEST_NAME, child.getName());
-        assertEquals("element child close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child's child is char sequence", child.isCharSequence());
-        assertEquals("element child's child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-        assertEquals("element close tag correct", TEST_CLOSE_TAG, markupElement.getCloseTag());
-    }
-
-    @Test
-    public void testOpenTagWithDoubleElementChild() throws Exception {
-        MarkupElement markupElement = new MarkupElement(TestBailsStreamFactory.getNewBailsStream(DOUBLE_ELEMENT_CHILD));
-
-        assertEquals("element open tag correct", TEST_OPEN_TAG, markupElement.getOpenTag());
-        assertEquals("element name correct", TEST_NAME, markupElement.getName());
-        assertEquals("element has two children", 2, markupElement.getChildren().size());
-        MarkupElement child = markupElement.getChildren().get(0);
-        assertFalse("element child 1 is tag", child.isCharSequence());
-        assertEquals("element child 1 open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child 1 name correct", TEST_NAME, child.getName());
-        assertEquals("element child 1 close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child 1 child is char sequence", child.isCharSequence());
-        assertEquals("element child 1 child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-        child = markupElement.getChildren().get(1);
-        assertFalse("element child 2 is tag", child.isCharSequence());
-        assertEquals("element child 2 open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child 2 name correct", TEST_NAME, child.getName());
-        assertEquals("element child 2 close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child 2 child is char sequence", child.isCharSequence());
-        assertEquals("element child 2 child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-        assertEquals("element close tag correct", TEST_CLOSE_TAG, markupElement.getCloseTag());
-    }
-
-    @Test
-    public void testOpenTagWithBailsElementChild() throws Exception {
-        MarkupElement markupElement = new MarkupElement(TestBailsStreamFactory.getNewBailsStream(BAILS_ELEMENT_CHILD));
-
-        assertEquals("element open tag correct", TEST_OPEN_TAG, markupElement.getOpenTag());
-        assertEquals("element name correct", TEST_NAME, markupElement.getName());
-        assertEquals("element has three children", 3, markupElement.getChildren().size());
-        assertEquals("element has one bails child", 1, markupElement.getBailsChildren().size());
-        MarkupElement child = markupElement.getChildren().get(0);
-        assertFalse("element child 1 is tag", child.isCharSequence());
-        assertEquals("element child 1 open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child 1 name correct", TEST_NAME, child.getName());
-        assertEquals("element child 1 close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child 1 child is char sequence", child.isCharSequence());
-        assertEquals("element child 1 child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-        child = markupElement.getChildren().get(1);
-        assertFalse("element child 2 is tag", child.isCharSequence());
-        assertEquals("element child 2 open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child 2 name correct", TEST_NAME, child.getName());
-        assertEquals("element child 2 close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child 2 child is char sequence", child.isCharSequence());
-        assertEquals("element child 2 child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-
-        child = markupElement.getChildren().get(2);
-        assertFalse("element child 3 is tag", child.isCharSequence());
-        assertTrue("element child 3 is bails element", child.isBailsElement());
-        assertEquals("element child 3 open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child 3 name correct", TEST_NAME, child.getName());
-        assertEquals("element child 3 close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child 3 child is char sequence", child.isCharSequence());
-        assertEquals("element child 3 child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-
-        assertEquals("element close tag correct", TEST_CLOSE_TAG, markupElement.getCloseTag());
-    }
-
-    @Test
-    public void testOpenTagWithChildElementWithChild() throws Exception {
-        MarkupElement markupElement = new MarkupElement(TestBailsStreamFactory.getNewBailsStream(CHILD_WITH_ELEMENT_CHILD));
-
-        assertEquals("element open tag correct", TEST_OPEN_TAG, markupElement.getOpenTag());
-        assertEquals("element name correct", TEST_NAME, markupElement.getName());
-        assertEquals("element has three children", 1, markupElement.getChildren().size());
-        MarkupElement child = markupElement.getChildren().get(0);
-        assertFalse("element child is tag", child.isCharSequence());
-        assertEquals("element child open tag correct", TEST_OPEN_TAG, child.getOpenTag());
-        assertEquals("element child name correct", TEST_NAME, child.getName());
-        assertEquals("element child close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertFalse("element child child is tag", child.isCharSequence());
-        assertEquals("element child child name correct", TEST_NAME, child.getName());
-        assertEquals("element child child close tag correct", TEST_CLOSE_TAG, child.getCloseTag());
-        child = child.getChildren().get(0);
-        assertTrue("element child child child is char sequence", child.isCharSequence());
-        assertEquals("element child child child char sequence correct", TEST_CHAR_SEQUENCE, child.toString());
-
-        assertEquals("element close tag correct", TEST_CLOSE_TAG, markupElement.getCloseTag());
+        assertEquals("name equals", TEST_NAME, child.getName());
+        assertEquals("attributes equals", TEST_ATTRIBUTES, child.getAttributes());
     }
 }
