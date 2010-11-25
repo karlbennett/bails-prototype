@@ -49,11 +49,7 @@ public abstract class Page extends Element {
 
         clearRender();
 
-        appendToRender(getMarkupElement().getOpenTag());
-
         renderChildren();
-
-        appendToRender(getMarkupElement().getCloseTag());
 
         return getRender();
     }
