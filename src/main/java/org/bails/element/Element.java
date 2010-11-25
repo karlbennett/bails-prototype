@@ -1,5 +1,6 @@
 package org.bails.element;
 
+import org.bails.markup.BailsTagElement;
 import org.bails.markup.MarkupElement;
 import org.bails.stream.IBailsStream;
 
@@ -124,7 +125,7 @@ public abstract class Element {
     protected void renderChildren() {
         Element child = null;
         for (MarkupElement childMarkup : getMarkupElement().getChildren()) {
-            if (childMarkup.isBailsElement()) {
+            if (childMarkup instanceof BailsTagElement) {
                 child = nextChild();
                 child.setMarkupElement(childMarkup);
                 appendToRender(child.render());
