@@ -2,7 +2,7 @@ package org.bails.element;
 
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
-import org.bails.test.TestBailsStreamFactory;
+import org.bails.test.TestBailsTestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class PageTest {
     @Before
     public void initStream() {
         stream = new BailsStreamSTAX(new ByteArrayInputStream(
-                TestBailsStreamFactory.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
+                TestBailsTestUtil.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
     }
 
     @After
@@ -58,7 +58,7 @@ public class PageTest {
 
         @Override
         public void initialise() {
-            add(new TestElement(TestBailsStreamFactory.TEST_BAILS_ID));
+            add(new TestElement(TestBailsTestUtil.TEST_BAILS_ID_TWO));
         }
     }
 
