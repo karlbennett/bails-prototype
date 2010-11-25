@@ -54,7 +54,6 @@ public class BailsStreamSTAX implements IBailsStream {
 
         try {
             this.parser = factory.createXMLEventReader(stream); // Get a new STAX event reader.
-//            next(); // Initialise the stream so that the it starts with data.
         } catch (XMLStreamException e) {
             System.out.println("SORT THIS OUT!: " + e.getMessage());
         }
@@ -104,6 +103,8 @@ public class BailsStreamSTAX implements IBailsStream {
         Iterator<Attribute> attributeIterator = element.getAttributes();
         Attribute attribute = null; // Place holder for each attribute.
 
+        bailsTag = false; // Prepare the element to be checked for a bails id.
+
         while (attributeIterator.hasNext()) { // Iterate over the attributes...
             attribute = attributeIterator.next(); // ...recording each one, ...
 
@@ -115,7 +116,9 @@ public class BailsStreamSTAX implements IBailsStream {
             String nameString = qName.getPrefix().equals("") ? qName.getLocalPart() :
                     qName.getPrefix() + ":" + qName.getLocalPart();
 
-            bailsTag = TagElement.BAILS_ID_NAME.equals(nameString); // Check if this is a bails id attribute and tag.
+            if (!bailsTag) { // If this isn't yet a bails tag keep checking to see if it is.
+                bailsTag = TagElement.BAILS_ID_NAME.equals(nameString);
+            }
 
             attributes.put(nameString, attribute.getValue());
         }
@@ -133,7 +136,7 @@ public class BailsStreamSTAX implements IBailsStream {
     @Override
     public boolean hasNext() {
         // If the stream is not pointing to the end of the document there must be more to process.
-        return currentEvent.getEventType() != END_DOCUMENT;
+        return parser.hasNext() && (currentEvent == null || currentEvent.getEventType() != END_DOCUMENT);
     }
 
     /**
@@ -145,41 +148,65 @@ public class BailsStreamSTAX implements IBailsStream {
             currentEventString.setLength(0); // Clear the xml events char sequence.
             currentEvent = this.parser.nextEvent(); // get the next event.
 
-            // Search for the next start/end element or a character event.
-            // These are the only three events supported at the moment. This means that the stat/end document events
-            // are ignored. So they will be absent from a rendered Bails page.
-            while (currentEvent.getEventType() != START_ELEMENT
+            ELEMENT_TYPE previousType = type; // Record the previous type to check for openClose tags.
+
+            // Search for the next start/end document/element or a character event.
+            while (currentEvent.getEventType() != START_DOCUMENT
+                    && currentEvent.getEventType() != START_ELEMENT
                     && currentEvent.getEventType() != CHARACTERS
-                    && currentEvent.getEventType() != END_ELEMENT) {
+                    && currentEvent.getEventType() != END_ELEMENT
+                    && currentEvent.getEventType() != END_DOCUMENT) {
                 currentEvent = this.parser.nextEvent();
             }
 
             switch (currentEvent.getEventType()) {
-                case START_ELEMENT : type = ELEMENT_TYPE.OPEN; break;
-                case END_ELEMENT : type = ELEMENT_TYPE.CLOSE; break;
-                case CHARACTERS : type = ELEMENT_TYPE.CHARACTERS;
+                case START_DOCUMENT:
+                    type = ELEMENT_TYPE.DOCUMENT_START;
+                    break;
+                case START_ELEMENT:
+                    if (this.parser.peek().getEventType() == END_ELEMENT) type = ELEMENT_TYPE.OPENCLOSE;
+                    else type = ELEMENT_TYPE.OPEN;
+                    break;
+                case END_ELEMENT:
+                    type = ELEMENT_TYPE.CLOSE;
+                    break;
+                case CHARACTERS:
+                    type = ELEMENT_TYPE.CHARACTERS;
+                    break;
+                case END_DOCUMENT:
+                    type = ELEMENT_TYPE.DOCUMENT_END;
+                    break;
             }
 
-            // Add the white space that should be at the start of the char sequence.
-            currentEventString.append(preWhiteSpace);
-            currentEventString.append(currentEvent); // Add char sequence.
+            // If we are at the start or end of the document don't do any more processing.
+            if (type != ELEMENT_TYPE.DOCUMENT_START && type != ELEMENT_TYPE.DOCUMENT_END) {
 
-            // Get the white space that should be at the end of this char sequence as well as the white space that
-            // should be before the next.
-            checkForNewLine();
+                // Add the white space that should be at the start of the char sequence.
+                currentEventString.append(preWhiteSpace);
+                // Add char sequence as long as the previous element wasn't openClose.
+                if (previousType != ELEMENT_TYPE.OPENCLOSE) {
+                    String eventSting = currentEvent.toString();
+                    if (type == ELEMENT_TYPE.OPENCLOSE) currentEventString.append(eventSting.replaceFirst(">$", "/>"));
+                    else currentEventString.append(eventSting);
+                }
 
-            // Add the white space that should be at the end of the char sequence.
-            currentEventString.append(postWhiteSpace);
+                // Get the white space that should be at the end of this char sequence as well as the white space that
+                // should be before the next.
+                checkForNewLine();
 
-            // If this is an opening tag any attributes will need be recorded.
-            if (currentEvent.getEventType() == START_ELEMENT) {
+                // Add the white space that should be at the end of the char sequence.
+                currentEventString.append(postWhiteSpace);
 
-                attributes = parsAttributes((StartElement) currentEvent); // Pars the start events attributes.
+                // If this is an opening tag any attributes will need be recorded.
+                if (currentEvent.getEventType() == START_ELEMENT) {
 
-                if(bailsTag) type = ELEMENT_TYPE.BAILS; // If this is a bails tag set it to the correct type.
+                    attributes = parsAttributes((StartElement) currentEvent); // Pars the start events attributes.
 
-            } else { // Otherwise there should be no attributes.
-                attributes = null;
+                    if (bailsTag) type = ELEMENT_TYPE.BAILS; // If this is a bails tag set it to the correct type.
+
+                } else { // Otherwise there should be no attributes.
+                    attributes = null;
+                }
             }
         } catch (XMLStreamException e) {
             System.out.println("SORT THIS OUT!: " + e.getMessage());
@@ -201,35 +228,6 @@ public class BailsStreamSTAX implements IBailsStream {
     @Override
     public ELEMENT_TYPE getType() {
         return type;
-    }
-
-    /**
-     * @see IBailsStream#isOpenTag()
-     */
-    @Override
-    public boolean isOpenTag() {
-        return currentEvent.getEventType() == START_ELEMENT;
-    }
-
-    @Override
-    public boolean isCloseTag() {
-        return currentEvent.getEventType() == END_ELEMENT;
-    }
-
-    /**
-     * @see IBailsStream#isOpenCloseTag()
-     */
-    @Override
-    public boolean isOpenCloseTag() {
-        return false; // No open close tag support yet.
-    }
-
-    /**
-     * @see IBailsStream#isCharacters()
-     */
-    @Override
-    public boolean isCharacters() {
-        return currentEvent.getEventType() == CHARACTERS;
     }
 
     /**
@@ -267,11 +265,6 @@ public class BailsStreamSTAX implements IBailsStream {
     @Override
     public Map<String, Object> getAttributes() {
         return attributes;
-    }
-
-    @Override
-    public boolean isBailsTag() {
-        return bailsTag;
     }
 
     @Override

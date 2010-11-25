@@ -27,26 +27,6 @@ public interface IBailsStream {
     public ELEMENT_TYPE getType();
 
     /**
-     * @return true if the current element is an opening tag.
-     */
-    public boolean isOpenTag();
-
-    /**
-     * @return true if the current element is an closing tag.
-     */
-    public boolean isCloseTag();
-
-    /**
-     * @return true if the current element is an open close tag.
-     */
-    public boolean isOpenCloseTag();
-
-    /**
-     * @return true if the current element is a characters element.
-     */
-    public boolean isCharacters();
-
-    /**
      * @return the character sequence representation of the current element. This should preserve all surrounding
      * whitespace.
      */
@@ -61,11 +41,6 @@ public interface IBailsStream {
      * @return the attributes related to the current element if it contains attributes otherwise null.
      */
     public Map<String, Object> getAttributes();
-
-    /**
-     * @return true if the current tag has a bails id.
-     */
-    public boolean isBailsTag();
 
     /**
      * @return the bails id for this element.
