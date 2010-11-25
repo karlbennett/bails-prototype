@@ -5,9 +5,11 @@ package org.bails.stream;
  * Date: 24/11/10
  */
 public enum ELEMENT_TYPE {
+    DOCUMENT_START,
     OPEN,
     CLOSE,
     OPENCLOSE,
     CHARACTERS,
-    BAILS
+    BAILS,
+    DOCUMENT_END
 }
