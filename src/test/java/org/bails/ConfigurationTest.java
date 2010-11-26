@@ -1,13 +1,10 @@
 package org.bails;
 
-import org.bails.element.Page;
-import org.bails.test.TestPage;
+import org.bails.element.OldPage;
+import org.bails.test.TestOldPage;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.util.Set;
 
 import static junit.framework.Assert.*;
 
@@ -32,11 +29,11 @@ public class ConfigurationTest {
 
     @Test
     public void testGetPage() throws Exception {
-        Page page = configuration.getPage(TestPage.class.getSimpleName());
+        OldPage oldPage = configuration.getPage(TestOldPage.class.getSimpleName());
 
-        assertEquals("test page correct", TestPage.class.getSimpleName(), page.getBailsId());
+        assertEquals("test oldPage correct", TestOldPage.class.getSimpleName(), oldPage.getBailsId());
 
-        System.out.println(page.render());
+        System.out.println(oldPage.render());
     }
 
     @Test

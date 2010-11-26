@@ -1,8 +1,7 @@
 package org.bails;
 
-import org.bails.element.Page;
+import org.bails.element.OldPage;
 import org.bails.markup.MarkupElement;
-import org.bails.property.Property;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
 
@@ -33,7 +32,7 @@ public class Configuration {
      */
 
     /**
-     * Searches in the given package for all the Page classes and their related markup.
+     * Searches in the given package for all the OldPage classes and their related markup.
      * <p/>
      * Code taken from: http://snippets.dzone.com/posts/show/4831
      *
@@ -75,7 +74,7 @@ public class Configuration {
             String className = file.getName().substring(0, file.getName().length() - 6);
             try {
                 Class pageClass = Class.forName(packageName + "." + className);
-                if (Page.class.isAssignableFrom(pageClass)) pages.put(className, pageClass);
+                if (OldPage.class.isAssignableFrom(pageClass)) pages.put(className, pageClass);
             } catch (ClassNotFoundException e) {
                 System.out.println("SORT THIS OUT!: " + e.getMessage());
             }
@@ -95,14 +94,14 @@ public class Configuration {
         return new BailsStreamSTAX(stream == null ? new FileInputStream(file) : stream);
     }
 
-    public Page getPage(String pageName) {
+    public OldPage getPage(String pageName) {
         Class pageClass = pages.get(pageName);
-        Page page = null;
+        OldPage oldPage = null;
 
         if (pageClass != null) {
             try {
-                page = (Page) pageClass.newInstance();
-                page.setMarkupElement(markupElements.get(pageClass.getSimpleName()));
+                oldPage = (OldPage) pageClass.newInstance();
+                oldPage.setMarkupElement(markupElements.get(pageClass.getSimpleName()));
             } catch (InstantiationException e) {
                 System.out.println("SORT THIS OUT!: " + e.getMessage());
             } catch (IllegalAccessException e) {
@@ -110,19 +109,19 @@ public class Configuration {
             }
         }
 
-        return page;
+        return oldPage;
     }
 
-    public static void populatePropteries(Page page, Map<String, Object> model) throws IllegalAccessException {
+    public static void populatePropteries(OldPage oldPage, Map<String, Object> model) throws IllegalAccessException {
 
         Object value = null;
-        for (Field field : page.getClass().getDeclaredFields()) {
+        for (Field field : oldPage.getClass().getDeclaredFields()) {
             field.setAccessible(true);
 
             value = model.get(field.getName());
 
             if (value != null) {
-                field.set(page, value);
+                field.set(oldPage, value);
             } else throw new RuntimeException("Property " + field.getName() + " not found in the model.");
         }
     }

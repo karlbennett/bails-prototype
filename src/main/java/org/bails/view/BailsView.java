@@ -1,7 +1,7 @@
 package org.bails.view;
 
 import org.bails.Configuration;
-import org.bails.element.Page;
+import org.bails.element.OldPage;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
@@ -49,11 +49,11 @@ public class BailsView extends AbstractTemplateView {
 
         System.out.println(getConfiguration() != null ? "Configuration is NOT null." : "Coniguration IS null.");
 
-        Page page = configuration.getPage(getUrl().replace("/", ""));
+        OldPage oldPage = configuration.getPage(getUrl().replace("/", ""));
 
-        Configuration.populatePropteries(page, model);
+        Configuration.populatePropteries(oldPage, model);
 
-        response.getWriter().write(page.render());
+        response.getWriter().write(oldPage.render());
         response.getWriter().flush();
         response.getWriter().close();
     }

@@ -18,6 +18,6 @@ public class BailsController {
 
     @RequestMapping("/index.html")
     public String index(@ModelAttribute("message") String message) {
-        return "PrototypePage";
+        return "PrototypeOldPage";
     }
 }

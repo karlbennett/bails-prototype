@@ -25,10 +25,10 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
-    <error-page>
+    <error-oldPage>
         <error-code>404</error-code>
         <location>/404.html</location>
-    </error-page>
+    </error-oldPage>
 
     <session-config>
         <session-timeout>240</session-timeout>

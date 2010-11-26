@@ -31,15 +31,15 @@ public class HTMLElementTest {
 
     @Test
     public void testRender() throws Exception {
-        Page testPage = new TestPage(stream);
+        OldPage testOldPage = new TestOldPage(stream);
 
-        System.out.println(testPage.render());
+        System.out.println(testOldPage.render());
     }
 
-    private static class TestPage extends Page {
+    private static class TestOldPage extends OldPage {
 
 
-        public TestPage(IBailsStream stream) {
+        public TestOldPage(IBailsStream stream) {
             super(stream);
         }
 

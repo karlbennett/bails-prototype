@@ -15,7 +15,7 @@ import static junit.framework.Assert.*;
 /**
  * @author Karl Bennett
  */
-public class PageTest {
+public class OldPageTest {
 
     private static IBailsStream stream;
 
@@ -33,26 +33,26 @@ public class PageTest {
 
     @Test
     public void testRender() throws Exception {
-        Page testPage = new TestPage(stream);
+        OldPage testOldPage = new TestOldPage(stream);
 
-        assertEquals("page bails is correct", TestPage.class.getSimpleName(), testPage.getBailsId());
+        assertEquals("page bails is correct", TestOldPage.class.getSimpleName(), testOldPage.getBailsId());
 
-        Page otherTestPage = new TestPage();
+        OldPage otherTestOldPage = new TestOldPage();
 
-        assertEquals("test pages equal", testPage, otherTestPage);
+        assertEquals("test pages equal", testOldPage, otherTestOldPage);
 
-        Page stubPage = new StubPage();
+        OldPage stubOldPage = new StubOldPage();
 
-        assertFalse("stub page not equal to test page", testPage.equals(stubPage));
+        assertFalse("stub page not equal to test page", testOldPage.equals(stubOldPage));
 
-        System.out.println(testPage.render());
+        System.out.println(testOldPage.render());
     }
 
-    private static class TestPage extends Page {
+    private static class TestOldPage extends OldPage {
 
-        public TestPage() {}
+        public TestOldPage() {}
 
-        public TestPage(IBailsStream stream) {
+        public TestOldPage(IBailsStream stream) {
             super(stream);
         }
 
@@ -62,7 +62,7 @@ public class PageTest {
         }
     }
 
-    private static class StubPage extends Page {
+    private static class StubOldPage extends OldPage {
 
         @Override
         public void initialise() {

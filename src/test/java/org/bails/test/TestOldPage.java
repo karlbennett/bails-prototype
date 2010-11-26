@@ -2,7 +2,7 @@ package org.bails.test;
 
 import org.bails.element.Element;
 import org.bails.element.HTMLElement;
-import org.bails.element.Page;
+import org.bails.element.OldPage;
 import org.junit.Ignore;
 
 /**
@@ -10,7 +10,7 @@ import org.junit.Ignore;
  */
 
 @Ignore
-public class TestPage extends Page {
+public class TestOldPage extends OldPage {
 
     @Override
     public void initialise() {
