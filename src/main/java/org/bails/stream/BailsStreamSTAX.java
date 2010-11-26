@@ -183,12 +183,8 @@ public class BailsStreamSTAX implements IBailsStream {
 
                 // Add the white space that should be at the start of the char sequence.
                 currentEventString.append(preWhiteSpace);
-                // Add char sequence as long as the previous element wasn't openClose.
-                if (previousType != ELEMENT_TYPE.OPENCLOSE) {
-                    String eventSting = currentEvent.toString();
-                    if (type == ELEMENT_TYPE.OPENCLOSE) currentEventString.append(eventSting.replaceFirst(">$", "/>"));
-                    else currentEventString.append(eventSting);
-                }
+                // Add char sequence of the current event.
+                currentEventString.append(currentEvent);
 
                 // Get the white space that should be at the end of this char sequence as well as the white space that
                 // should be before the next.

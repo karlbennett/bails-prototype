@@ -44,7 +44,8 @@ public class TagElement extends MarkupElement {
      *         would return "<element>".
      */
     public CharSequence getOpenTag() {
-        return openTag;
+
+        return openClose && getChildren().size() == 0 ? ((String)openTag).replaceFirst("[^/]>$", "/>") : openTag;
     }
 
     /**
@@ -67,7 +68,8 @@ public class TagElement extends MarkupElement {
      *         would return "</element>".
      */
     public CharSequence getCloseTag() {
-        return closeTag;
+        // If this is an open close tag with no children just return the whitespace after the close tag.
+        return openClose && getChildren().size() == 0 ? ((String)closeTag).replaceFirst("</\\w*>", "") : closeTag;
     }
 
     /**
