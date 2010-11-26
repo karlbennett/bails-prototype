@@ -14,8 +14,10 @@ public class PrototypePage extends Page {
 
     @Override
     public void initialise() {
+        Element html = new HTMLElement("html");
         Element body = new HTMLElement("body");
         body.add(new HTMLElement("message", message));
-        add(body);
+        html.add(body);
+        add(html);
     }
 }
