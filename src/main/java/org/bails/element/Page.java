@@ -1,6 +1,7 @@
 package org.bails.element;
 
 import org.bails.markup.MarkupElement;
+import org.bails.markup.TagElement;
 import org.bails.stream.IBailsStream;
 
 /**

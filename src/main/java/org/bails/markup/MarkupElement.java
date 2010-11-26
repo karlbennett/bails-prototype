@@ -41,20 +41,25 @@ public class MarkupElement {
             switch (stream.getType()) {
                 case OPEN: {
                     child = new TagElement(stream, stream.getCharSequence(), stream.getName(), stream.getAttributes());
+                    child.setParent(this);
                     break;
                 }
                 case OPENCLOSE: {
                     child = new TagElement(stream, stream.getCharSequence(), stream.getName(), stream.getAttributes(),
                             true);
+                    child.setParent(this);
                     break;
                 }
                 case CHARACTERS: {
                     child = new CharactersElement(stream);
+                    child.setParent(this);
                     break;
                 }
                 case BAILS: {
                     child = new BailsTagElement(stream, stream.getBailsId(), stream.getCharSequence(), stream.getName(),
                             stream.getAttributes());
+                    child.setParent(this);
+                    break;
                 }
             }
 
@@ -82,11 +87,19 @@ public class MarkupElement {
         return parent;
     }
 
+    protected void setParent(MarkupElement parent) {
+        this.parent = parent;
+    }
+
     /**
      * @return The list of child elements within this MarkupElement class.
      */
     public List<MarkupElement> getChildren() {
         return children;
+    }
+
+    protected void setChildren(List<MarkupElement> children) {
+        this.children = children;
     }
 
     /*
