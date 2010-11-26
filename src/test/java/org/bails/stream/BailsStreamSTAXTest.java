@@ -141,15 +141,15 @@ public class BailsStreamSTAXTest {
         stream.next();
         testString.append(stream.getCharSequence()); //    <element>
         stream.next();
-        testString.append(stream.getCharSequence()); //    <element/>\n - Empty tags converted to openClose.
-        Assert.assertEquals("element five char sequence correct.", TestBailsTestUtil.XML_LINE_SIX, testString.toString());
+        testString.append(stream.getCharSequence()); //    <element></element>\n
+        Assert.assertEquals("element five char sequence correct.", TestBailsTestUtil.XML_LINE_FIVE, testString.toString());
 
         testString.setLength(0);
         stream.next();
         testString.append(stream.getCharSequence()); //    <element>
         stream.next();
-        testString.append(stream.getCharSequence()); //    <element/>\n
-        Assert.assertEquals("element six char sequence correct.", TestBailsTestUtil.XML_LINE_SIX, testString.toString());
+        testString.append(stream.getCharSequence()); //    <element></element>\n - OpenClose tags are split into two elements.
+        Assert.assertEquals("element six char sequence correct.", TestBailsTestUtil.XML_LINE_FIVE, testString.toString());
 
 
         stream.next(); // </element>
