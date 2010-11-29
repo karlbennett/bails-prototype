@@ -4,9 +4,8 @@ import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class gives an object representation of a tag within bails markup.
@@ -18,13 +17,21 @@ public class MarkupElement {
     public static final String BAILS_ID_NAME = "bails:id"; // Bails attribute name. Quick dirty and going to change.
 
     private MarkupElement parent;
-    private List<MarkupElement> children = new ArrayList<MarkupElement>();
+    private List children = new ArrayList();
 
     public MarkupElement() {
     }
 
     public MarkupElement(IBailsStream stream) {
         addChildren(stream);
+    }
+
+    public MarkupElement(MarkupElement... childs) {
+        this(Arrays.asList(childs));
+    }
+
+    public MarkupElement(List<MarkupElement> children) {
+        this.children.addAll(children);
     }
 
     /*
@@ -69,13 +76,22 @@ public class MarkupElement {
         }
     }
 
+    public MarkupElement add(Object... childs) {
+        for (Object child : childs) {
+            children.add(child);
+            if (child instanceof MarkupElement) ((MarkupElement) child).setParent(this);
+        }
+
+        return this;
+    }
+
     /**
      * Get a child from the MarkupElement.
      *
      * @param i the index of the child.
      * @return the child at the given index.
      */
-    public MarkupElement getChild(int i) {
+    public Object getChild(int i) {
         return children == null ? null : children.get(i);
     }
 
@@ -94,11 +110,11 @@ public class MarkupElement {
     /**
      * @return The list of child elements within this MarkupElement class.
      */
-    public List<MarkupElement> getChildren() {
+    public List getChildren() {
         return children;
     }
 
-    protected void setChildren(List<MarkupElement> children) {
+    protected void setChildren(List children) {
         this.children = children;
     }
 
@@ -110,8 +126,7 @@ public class MarkupElement {
     public String toString() {
         StringBuilder elementString = new StringBuilder(0);
 
-        for (MarkupElement child : children)
-            elementString.append(child.toString()); // Run to string across all the children.
+        for (Object child : children) elementString.append(child.toString()); // Run to string across all the children.
 
         return elementString.toString(); // Return the complete string representation of the element.
     }

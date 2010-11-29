@@ -3,6 +3,7 @@ package org.bails.markup;
 import org.bails.stream.IBailsStream;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,6 +19,9 @@ public class TagElement extends MarkupElement {
     private CharSequence closeTag;
 
     private boolean openClose = false; // Indicates whether if this is an openClose tag or not which effects the toString method.
+
+    public TagElement() {
+    }
 
     public TagElement(IBailsStream stream, CharSequence openTag, String name, Map<String, Object> attributes) {
         this(stream, openTag, name, attributes, false);
@@ -35,6 +39,14 @@ public class TagElement extends MarkupElement {
         this.closeTag = stream.getCharSequence();
     }
 
+    public TagElement(MarkupElement... childs) {
+        super(childs);
+    }
+
+    public TagElement(List<MarkupElement> children) {
+        super(children);
+    }
+
     /*
         Getters and Setters.
      */
@@ -45,7 +57,11 @@ public class TagElement extends MarkupElement {
      */
     public CharSequence getOpenTag() {
 
-        return openClose && getChildren().size() == 0 ? ((String)openTag).replaceFirst("[^/]>$", "/>") : openTag;
+        return openClose && getChildren().size() == 0 ? ((String) openTag).replaceFirst("[^/]>$", "/>") : openTag;
+    }
+
+    protected void setOpenTag(CharSequence openTag) {
+        this.openTag = openTag;
     }
 
     /**
@@ -53,6 +69,10 @@ public class TagElement extends MarkupElement {
      */
     public String getName() {
         return name;
+    }
+
+    protected void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -63,13 +83,21 @@ public class TagElement extends MarkupElement {
         return attributes;
     }
 
+    protected void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
+
     /**
      * @return Get the character sequence representation of this elements closing tag e.g. For <element></element> this
      *         would return "</element>".
      */
     public CharSequence getCloseTag() {
         // If this is an open close tag with no children just return the whitespace after the close tag.
-        return openClose && getChildren().size() == 0 ? ((String)closeTag).replaceFirst("</\\w*>", "") : closeTag;
+        return openClose && getChildren().size() == 0 ? ((String) closeTag).replaceFirst("</\\w*>", "") : closeTag;
+    }
+
+    protected void setCloseTag(CharSequence closeTag) {
+        this.closeTag = closeTag;
     }
 
     /**
@@ -77,6 +105,10 @@ public class TagElement extends MarkupElement {
      */
     public boolean isOpenClose() {
         return openClose;
+    }
+
+    protected void setOpenClose(boolean openClose) {
+        this.openClose = openClose;
     }
 
     /*
@@ -88,7 +120,7 @@ public class TagElement extends MarkupElement {
         StringBuilder elementString = new StringBuilder(0);
 
         elementString.append(getOpenTag()); // ...add the open tag to the output, ...
-        for (MarkupElement child : getChildren()) elementString.append(child.toString()); // ...add the child chars, ...
+        elementString.append(super.toString()); // ...add the child chars, ...
         elementString.append(getCloseTag()); // ...then lastly add the close tag.
 
         return elementString.toString(); // Return the complete string representation of the element.

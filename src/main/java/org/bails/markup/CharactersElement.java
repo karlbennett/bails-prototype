@@ -7,9 +7,12 @@ import org.bails.stream.IBailsStream;
  *
  * @author Karl Bennett
  */
-public class CharactersElement extends MarkupElement{
+public class CharactersElement extends MarkupElement {
 
     private CharSequence chars;
+
+    public CharactersElement() {
+    }
 
     public CharactersElement(IBailsStream stream) {
         chars = stream.getCharSequence();
