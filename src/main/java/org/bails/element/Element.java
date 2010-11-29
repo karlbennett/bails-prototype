@@ -124,10 +124,10 @@ public abstract class Element {
      */
     protected void renderChildren() {
         Element child = null;
-        for (MarkupElement childMarkup : getMarkupElement().getChildren()) {
+        for (Object childMarkup : getMarkupElement().getChildren()) {
             if (childMarkup instanceof BailsTagElement) {
                 child = nextChild();
-                child.setMarkupElement(childMarkup);
+                child.setMarkupElement((BailsTagElement)childMarkup);
                 appendToRender(child.render());
             } else {
                 appendToRender(childMarkup.toString());

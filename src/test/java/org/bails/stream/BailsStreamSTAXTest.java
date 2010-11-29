@@ -160,6 +160,7 @@ public class BailsStreamSTAXTest {
     public void testIntegrationTest() throws Exception {
         MarkupElement markupElement = new MarkupElement(stream);
 
-        Assert.assertEquals("element children.", TestBailsTestUtil.CHILD_NUM, markupElement.getChild(0).getChildren().size());
+        Assert.assertEquals("element children.", TestBailsTestUtil.CHILD_NUM,
+                ((MarkupElement)markupElement.getChild(0)).getChildren().size());
     }
 }

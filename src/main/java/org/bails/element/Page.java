@@ -1,22 +1,24 @@
 package org.bails.element;
 
+import org.bails.markup.BailsTagElement;
 import org.bails.markup.MarkupElement;
-import org.bails.markup.TagElement;
 import org.bails.stream.IBailsStream;
 
+import java.util.List;
+
 /**
- * This si the class that all Bails pages should subclass. Any user created Bails pages will be instantiated as
+ * This is the class that all Bails pages should subclass. Any user created Bails pages will be instantiated as
  * singletons and their bailsId will be set to the simple name of the subclass.
+ *
  * @author Karl Bennett
  */
 public abstract class Page extends MarkupElement {
-
-    private boolean initialised = false;
 
     public Page() {
     }
 
     public Page(MarkupElement markupElement) {
+        super(markupElement.getChildren());
     }
 
     public Page(IBailsStream stream) {
@@ -33,8 +35,16 @@ public abstract class Page extends MarkupElement {
     public abstract void initialise();
 
     /*
+        Convenience Methods
+     */
+
+    public Page add(BailsTagElement... childs) {
+
+
+        return this;
+    }
+
+    /*
        Override methods.
     */
-
-
 }
