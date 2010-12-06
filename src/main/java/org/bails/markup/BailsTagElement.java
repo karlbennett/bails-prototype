@@ -16,18 +16,42 @@ public class BailsTagElement extends TagElement {
 
     private String bailsId;
 
+    private String bailsPath;
+
     public BailsTagElement() {
     }
 
-    public BailsTagElement(IBailsStream stream, String bailsId, CharSequence openTag, String name,
-                           Map<String, Object> attributes) {
-        this(stream, openTag, name, attributes, false);
+    public BailsTagElement(String bailsId) {
         this.bailsId = bailsId;
     }
 
-    public BailsTagElement(IBailsStream stream, CharSequence openTag, String name, Map<String, Object> attributes,
+    public BailsTagElement(String bailsId, Object value) {
+        this.bailsId = bailsId;
+        if (value instanceof BailsTagElement) { // Check for a BailsTagElement...
+            add((BailsTagElement)value); // ...if this was initialised with a BailsTagElement then it needs to be added correctly.
+        } else {
+            add(value); // Otherwise just add it normal object.
+        }
+    }
+
+    public BailsTagElement(MarkupElement parent, IBailsStream stream, String bailsId, CharSequence openTag, String name,
+                           Map<String, Object> attributes) {
+        this(parent, stream, bailsId, openTag, name, attributes, false);
+    }
+
+    public BailsTagElement(MarkupElement parent, IBailsStream stream, String bailsId, CharSequence openTag, String name, Map<String, Object> attributes,
                            boolean openClose) {
-        super(stream, openTag, name, attributes, openClose);
+        setHeritage(parent);
+
+        this.bailsId = bailsId;
+
+        BailsTagElement bailsParent = findBailsParent();
+
+        this.bailsPath = bailsParent == null ? this.bailsId : bailsParent.getBailsPath() + ":" + this.bailsId;
+
+        getAncestor().addBailsMarkupChild(getBailsPath(), this);
+
+        populateElement(stream, openTag, name, attributes, openClose);
     }
 
     public BailsTagElement(MarkupElement... childs) {
@@ -36,6 +60,38 @@ public class BailsTagElement extends TagElement {
 
     public BailsTagElement(List<MarkupElement> children) {
         super(children);
+    }
+
+    /*
+        Convenience methods.
+     */
+
+    private BailsTagElement findBailsParent() {
+        MarkupElement parent = getParent();
+
+        while (parent != null) {
+            if (parent instanceof BailsTagElement) {
+                return (BailsTagElement) parent;
+            }
+            parent = parent.getParent();
+        }
+
+        return null;
+    }
+
+    public BailsTagElement add(BailsTagElement... childs) {
+
+        for (BailsTagElement child : childs) {
+
+            if (getBailsMarkupChild(child.getBailsPath()) == null) {
+                throw new RuntimeException("No matching bails markup found for bails element: " + child.getBailsId());
+            }
+
+            child.setHeritage(this);
+            getAncestor().addBailsChild(child.getBailsPath(), child);
+        }
+
+        return this;
     }
 
     /*
@@ -49,7 +105,30 @@ public class BailsTagElement extends TagElement {
         return bailsId;
     }
 
-    public void setBailsId(String bailsId) {
+    protected void setBailsId(String bailsId) {
         this.bailsId = bailsId;
     }
+
+    public String getBailsPath() {
+        return bailsPath;
+    }
+
+    private void setBailsPath(String bailsPath) {
+        this.bailsPath = bailsPath;
+    }
+
+    /*
+       Override methods.
+    */
+
+//    @Override
+//    public String toString() {
+//        StringBuilder elementString = new StringBuilder(0);
+//
+//        elementString.append(getOpenTag()); // ...add the open tag to the output, ...
+//        elementString.append(super.toString()); // ...add the child chars, ...
+//        elementString.append(getCloseTag()); // ...then lastly add the close tag.
+//
+//        return elementString.toString(); // Return the complete string representation of the element.
+//    }
 }
