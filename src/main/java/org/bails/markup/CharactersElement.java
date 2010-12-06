@@ -14,7 +14,8 @@ public class CharactersElement extends MarkupElement {
     public CharactersElement() {
     }
 
-    public CharactersElement(IBailsStream stream) {
+    public CharactersElement(MarkupElement parent, IBailsStream stream) {
+        setHeritage(parent);
         chars = stream.getCharSequence();
     }
 
