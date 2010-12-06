@@ -40,6 +40,15 @@ public abstract class Page extends MarkupElement {
 
     public Page add(BailsTagElement... childs) {
 
+        for (BailsTagElement child : childs) {
+
+            if (getBailsMarkupChild(child.getBailsPath()) == null) {
+                throw new RuntimeException("No matching bails markup found for bails element: " + child.getBailsId());
+            }
+
+            child.setHeritage(this);
+            addBailsChild(child.getBailsPath(), child);
+        }
 
         return this;
     }
