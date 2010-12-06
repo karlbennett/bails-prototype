@@ -23,20 +23,15 @@ public class TagElement extends MarkupElement {
     public TagElement() {
     }
 
-    public TagElement(IBailsStream stream, CharSequence openTag, String name, Map<String, Object> attributes) {
-        this(stream, openTag, name, attributes, false);
+    public TagElement(MarkupElement parent, IBailsStream stream, CharSequence openTag, String name,
+                      Map<String, Object> attributes) {
+        this(parent, stream, openTag, name, attributes, false);
     }
 
-    public TagElement(IBailsStream stream, CharSequence openTag, String name, Map<String, Object> attributes,
-                      boolean openClose) {
-        this.openTag = openTag;
-        this.name = name;
-        this.attributes = attributes;
-        this.openClose = openClose;
-
-        addChildren(stream);
-
-        this.closeTag = stream.getCharSequence();
+    public TagElement(MarkupElement parent, IBailsStream stream, CharSequence openTag, String name,
+                      Map<String, Object> attributes, boolean openClose) {
+        setHeritage(parent);
+        populateElement(stream, openTag, name, attributes, openClose);
     }
 
     public TagElement(MarkupElement... childs) {
@@ -45,6 +40,22 @@ public class TagElement extends MarkupElement {
 
     public TagElement(List<MarkupElement> children) {
         super(children);
+    }
+
+    /*
+        Convenience methods.
+     */
+
+    protected void populateElement(IBailsStream stream, CharSequence openTag, String name,
+                                   Map<String, Object> attributes, boolean openClose) {
+        this.openTag = openTag;
+        this.name = name;
+        this.attributes = attributes;
+        this.openClose = openClose;
+
+        addChildren(stream);
+
+        this.closeTag = stream.getCharSequence();
     }
 
     /*
