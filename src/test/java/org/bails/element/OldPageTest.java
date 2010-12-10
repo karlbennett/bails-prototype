@@ -77,7 +77,7 @@ public class OldPageTest {
 
         @Override
         public String render() {
-            return getMarkupElement().toString();
+            return getElement().toString();
         }
     }
 }

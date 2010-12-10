@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Karl Bennett
  */
-public class TagElement extends MarkupElement {
+public class TagElement extends Element {
 
     private CharSequence openTag;
     private String name;
@@ -23,22 +23,22 @@ public class TagElement extends MarkupElement {
     public TagElement() {
     }
 
-    public TagElement(MarkupElement parent, IBailsStream stream, CharSequence openTag, String name,
+    public TagElement(Element parent, IBailsStream stream, CharSequence openTag, String name,
                       Map<String, Object> attributes) {
         this(parent, stream, openTag, name, attributes, false);
     }
 
-    public TagElement(MarkupElement parent, IBailsStream stream, CharSequence openTag, String name,
+    public TagElement(Element parent, IBailsStream stream, CharSequence openTag, String name,
                       Map<String, Object> attributes, boolean openClose) {
         setHeritage(parent);
         populateElement(stream, openTag, name, attributes, openClose);
     }
 
-    public TagElement(MarkupElement... childs) {
+    public TagElement(Element... childs) {
         super(childs);
     }
 
-    public TagElement(List<MarkupElement> children) {
+    public TagElement(List<Element> children) {
         super(children);
     }
 

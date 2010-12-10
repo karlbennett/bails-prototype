@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 /**
  * @author Karl Bennett
  */
-public class MarkupElementTest {
+public class ElementTest {
 
     private IBailsStream stream;
 
@@ -38,7 +38,7 @@ public class MarkupElementTest {
 
     @Test
     public void initialiseMarkupElement() throws Exception {
-        MarkupElement element = new MarkupElement(stream);
+        Element element = new Element(stream);
     }
 
     @Test
@@ -50,14 +50,14 @@ public class MarkupElementTest {
 
         when(stream.getCharSequence()).thenReturn(TEST_CHAR_SEQUENCE);
 
-        MarkupElement markupElement = new MarkupElement(stream);
+        Element element = new Element(stream);
 
         verify(stream, times(2)).next();
         verify(stream, times(2)).hasNext();
         verify(stream, times(2)).getType();
         verify(stream, times(1)).getCharSequence();
 
-        assertEquals("char sequence equals", TEST_CHAR_SEQUENCE, markupElement.toString());
+        assertEquals("char sequence equals", TEST_CHAR_SEQUENCE, element.toString());
     }
 
     @Test
@@ -70,7 +70,7 @@ public class MarkupElementTest {
         when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG).thenReturn("");
         when(stream.getName()).thenReturn(TEST_NAME);
 
-        MarkupElement markupElement = new MarkupElement(stream);
+        Element element = new Element(stream);
 
         verify(stream, times(3)).next();
         verify(stream, times(3)).hasNext();
@@ -79,9 +79,9 @@ public class MarkupElementTest {
         verify(stream, times(1)).getName();
         verify(stream, times(1)).getAttributes();
 
-        TagElement child = (TagElement)markupElement.getChild(0);
+        TagElement child = (TagElement) element.getChild(0);
 
-        assertEquals("char sequence equals", TEST_OPEN_CLOSE_TAG, markupElement.toString());
+        assertEquals("char sequence equals", TEST_OPEN_CLOSE_TAG, element.toString());
         assertEquals("name equals", TEST_NAME, child.getName());
     }
 
@@ -96,7 +96,7 @@ public class MarkupElementTest {
         when(stream.getName()).thenReturn(TEST_NAME);
         when(stream.getAttributes()).thenReturn(TEST_ATTRIBUTES);
 
-        MarkupElement markupElement = new MarkupElement(stream);
+        Element element = new Element(stream);
 
         verify(stream, times(3)).next();
         verify(stream, times(3)).hasNext();
@@ -105,9 +105,9 @@ public class MarkupElementTest {
         verify(stream, times(1)).getName();
         verify(stream, times(1)).getAttributes();
 
-        TagElement child = (TagElement)markupElement.getChild(0);
+        TagElement child = (TagElement) element.getChild(0);
 
-        assertEquals("char sequence equals", TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES, markupElement.toString());
+        assertEquals("char sequence equals", TEST_OPEN_CLOSE_TAG_WITH_ATTRIBUTES, element.toString());
         assertEquals("name equals", TEST_NAME, child.getName());
         assertEquals("attributes equals", TEST_ATTRIBUTES, child.getAttributes());
     }

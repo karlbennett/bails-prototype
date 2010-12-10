@@ -1,7 +1,7 @@
 package org.bails.stream;
 
 import junit.framework.Assert;
-import org.bails.markup.MarkupElement;
+import org.bails.markup.Element;
 import org.bails.test.TestBailsTestUtil;
 import org.junit.After;
 import org.junit.Before;
@@ -158,9 +158,9 @@ public class BailsStreamSTAXTest {
 
     @Test
     public void testIntegrationTest() throws Exception {
-        MarkupElement markupElement = new MarkupElement(stream);
+        Element element = new Element(stream);
 
         Assert.assertEquals("element children.", TestBailsTestUtil.CHILD_NUM,
-                ((MarkupElement)markupElement.getChild(0)).getChildren().size());
+                ((Element) element.getChild(0)).getChildren().size());
     }
 }

@@ -1,10 +1,8 @@
 package org.bails.element;
 
 import org.bails.markup.BailsTagElement;
-import org.bails.stream.IBailsStream;
 
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * Date: 29/11/10
@@ -13,10 +11,11 @@ import java.util.Map;
  */
 public class BailsComponent extends BailsTagElement {
 
-    public BailsComponent() {}
+    public BailsComponent() {
+    }
 
     public BailsComponent(BailsTagElement element) {
-        super(element.getChildren());
+//        super(element.getChildren());
         setOpenTag(element.getOpenTag());
         setName(element.getName());
         setAttributes(element.getAttributes());

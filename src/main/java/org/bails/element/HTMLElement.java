@@ -1,6 +1,5 @@
 package org.bails.element;
 
-import org.bails.markup.MarkupElement;
 import org.bails.markup.TagElement;
 
 import java.util.HashMap;
@@ -27,7 +26,7 @@ public class HTMLElement extends Element {
     public String render() {
         clearRender();
 
-        appendToRender(((TagElement)getMarkupElement()).getOpenTag());
+        appendToRender(((TagElement) getElement()).getOpenTag());
 
         if (hasChildren()) {
             renderChildren();
@@ -35,7 +34,7 @@ public class HTMLElement extends Element {
             appendToRender(value.toString());
         }
 
-        appendToRender(((TagElement)getMarkupElement()).getCloseTag());
+        appendToRender(((TagElement) getElement()).getCloseTag());
 
         return getRender();
     }

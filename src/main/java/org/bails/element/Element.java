@@ -1,7 +1,6 @@
 package org.bails.element;
 
 import org.bails.markup.BailsTagElement;
-import org.bails.markup.MarkupElement;
 import org.bails.stream.IBailsStream;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ import java.util.List;
  */
 public abstract class Element {
 
-    private MarkupElement markupElement;
+    private org.bails.markup.Element element;
     private List<Element> children = new ArrayList<Element>();
     private int childIndex = 0;
     private String bailsId;
@@ -26,17 +25,17 @@ public abstract class Element {
         this.bailsId = bailsId;
     }
 
-    protected Element(MarkupElement markupElement) {
-        this.markupElement = markupElement;
+    protected Element(org.bails.markup.Element element) {
+        this.element = element;
     }
 
     protected Element(IBailsStream stream) {
-        this.markupElement = new MarkupElement(stream);
+        this.element = new org.bails.markup.Element(stream);
     }
 
     protected Element(String bailsId, IBailsStream stream) {
         this.bailsId = bailsId;
-        this.markupElement = new MarkupElement(stream);
+        this.element = new org.bails.markup.Element(stream);
     }
 
     public void add(Element... childs) {
@@ -124,10 +123,10 @@ public abstract class Element {
      */
     protected void renderChildren() {
         Element child = null;
-        for (Object childMarkup : getMarkupElement().getChildren()) {
+        for (Object childMarkup : getElement().getChildren()) {
             if (childMarkup instanceof BailsTagElement) {
                 child = nextChild();
-                child.setMarkupElement((BailsTagElement)childMarkup);
+                child.setElement((BailsTagElement) childMarkup);
                 appendToRender(child.render());
             } else {
                 appendToRender(childMarkup.toString());
@@ -156,22 +155,22 @@ public abstract class Element {
      */
 
     /**
-     * Get the MarkupElement for this Element. This should not be called publicly.
+     * Get the Element for this Element. This should not be called publicly.
      * But is used by subclasses render method.
      *
-     * @return the MarkupElement for this Element.
+     * @return the Element for this Element.
      */
-    protected MarkupElement getMarkupElement() {
-        return markupElement;
+    protected org.bails.markup.Element getElement() {
+        return element;
     }
 
     /**
-     * Set the MarkupElement for this bails Element.
+     * Set the Element for this bails Element.
      *
-     * @param markupElement the new MarkupElement.
+     * @param element the new Element.
      */
-    public void setMarkupElement(MarkupElement markupElement) {
-        this.markupElement = markupElement;
+    public void setElement(org.bails.markup.Element element) {
+        this.element = element;
     }
 
     /**

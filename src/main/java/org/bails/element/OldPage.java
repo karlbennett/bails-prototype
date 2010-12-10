@@ -1,6 +1,5 @@
 package org.bails.element;
 
-import org.bails.markup.MarkupElement;
 import org.bails.stream.IBailsStream;
 
 /**
@@ -8,7 +7,7 @@ import org.bails.stream.IBailsStream;
  * singletons and their bailsId will be set to the simple name of the subclass.
  * @author Karl Bennett
  */
-public abstract class OldPage extends Element {
+public abstract class OldPage extends org.bails.element.Element {
 
     private boolean initialised = false;
 
@@ -17,8 +16,8 @@ public abstract class OldPage extends Element {
         setBailsId(getClass().getSimpleName());
     }
 
-    public OldPage(MarkupElement markupElement) {
-        super(markupElement);
+    public OldPage(org.bails.markup.Element element) {
+        super(element);
         setBailsId(getClass().getSimpleName());
     }
 

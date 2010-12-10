@@ -1,7 +1,7 @@
 package org.bails;
 
 import org.bails.element.OldPage;
-import org.bails.markup.MarkupElement;
+import org.bails.markup.Element;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
 
@@ -19,7 +19,7 @@ public class Configuration {
 
     private Map<String, Class> pages = new HashMap<String, Class>();
 
-    private Map<String, MarkupElement> markupElements = new HashMap<String, MarkupElement>();
+    private Map<String, Element> markupElements = new HashMap<String, Element>();
 
     public Configuration() {}
 
@@ -81,7 +81,7 @@ public class Configuration {
         } else if (file.getName().endsWith(".html")) {
             String viewName = file.getName().substring(0, file.getName().length() - 5);
             try {
-                markupElements.put(viewName, new MarkupElement(getBailsStream(file)));
+                markupElements.put(viewName, new Element(getBailsStream(file)));
             } catch (FileNotFoundException e) {
                 System.out.println("SORT THIS OUT!: " + e.getMessage());
             }
@@ -101,7 +101,7 @@ public class Configuration {
         if (pageClass != null) {
             try {
                 oldPage = (OldPage) pageClass.newInstance();
-                oldPage.setMarkupElement(markupElements.get(pageClass.getSimpleName()));
+                oldPage.setElement(markupElements.get(pageClass.getSimpleName()));
             } catch (InstantiationException e) {
                 System.out.println("SORT THIS OUT!: " + e.getMessage());
             } catch (IllegalAccessException e) {

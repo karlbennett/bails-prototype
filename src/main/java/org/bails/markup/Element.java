@@ -1,5 +1,6 @@
 package org.bails.markup;
 
+import org.bails.IElement;
 import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
 
@@ -10,28 +11,26 @@ import java.util.*;
  *
  * @author Karl Bennett
  */
-public class MarkupElement {
+public class Element implements IElement {
 
     public static final String BAILS_ID_NAME = "bails:id"; // Bails attribute name. Quick dirty and going to change.
 
-    private MarkupElement ancestor = this;
-    private MarkupElement parent;
+    private IElement ancestor;
+    private IElement parent;
     private List children = new ArrayList();
-    private Map<String, BailsTagElement> bailsMarkupChildren = new HashMap<String, BailsTagElement>();
-    private Map<String, BailsTagElement> bailsChildren = new HashMap<String, BailsTagElement>();
 
-    public MarkupElement() {
+    public Element() {
     }
 
-    public MarkupElement(IBailsStream stream) {
+    public Element(IBailsStream stream) {
         addChildren(stream);
     }
 
-    public MarkupElement(MarkupElement... childs) {
+    public Element(Element... childs) {
         this(Arrays.asList(childs));
     }
 
-    public MarkupElement(List<MarkupElement> children) {
+    public Element(List<Element> children) {
         this.children.addAll(children);
     }
 
@@ -72,8 +71,14 @@ public class MarkupElement {
         }
     }
 
-    public MarkupElement add(Object... childs) {
+    /**
+     * Add a object to this element.
+     * @param childs the child or children to add to this element.
+     * @return  this element to allow chaining.
+     */
+    public Element add(Object... childs) {
         for (Object child : childs) {
+            addLambda(child);
             children.add(child);
         }
 
@@ -81,63 +86,26 @@ public class MarkupElement {
     }
 
     /**
-     * Get a child from the MarkupElement.
+     *  This function can be overridden to run any logic over each child before it is added.
+     * @param child the next child to be added to this element.
+     */
+    protected void addLambda(Object child) {
+        // Add logic here.
+    }
+
+    /**
+     * Get a child from the Element.
      *
      * @param i the index of the child.
      * @return the child at the given index.
      */
+    @Override
     public Object getChild(int i) {
         return children == null ? null : children.get(i);
     }
 
-    /**
-     * Get a bails markup child from the MarkupElement using the bails path.
-     *
-     * @param path the path to the BailsTagElement. This is a string of bails ids separated by  colons (:).
-     * @return the child at the given path. Or null if the path is incorrect.
-     */
-    public BailsTagElement getBailsMarkupChild(String path) {
-        return bailsMarkupChildren.get(path);
-    }
-
-    /**
-     * Add a bails markup child to this element.
-     *
-     * @param path       the path of the bails child.
-     * @param bailsChild the child bails markup element.
-     * @return this element to allow for chaining.
-     */
-    public MarkupElement addBailsMarkupChild(String path, BailsTagElement bailsChild) {
-        bailsMarkupChildren.put(path, bailsChild);
-
-        return this;
-    }
-
-    /**
-     * Get a bails child from the MarkupElement using the bails path.
-     *
-     * @param path the path to the BailsTagElement. This is a string of bails ids separated by  colons (:).
-     * @return the child at the given path. Or null if the path is incorrect.
-     */
-    public BailsTagElement getBailsChild(String path) {
-        return bailsChildren.get(path);
-    }
-
-    /**
-     * Add a bails child to this element.
-     *
-     * @param path       the path of the bails child.
-     * @param bailsChild the child bails element.
-     * @return this element to allow for chaining.
-     */
-    public MarkupElement addBailsChild(String path, BailsTagElement bailsChild) {
-        bailsChildren.put(path, bailsChild);
-
-        return this;
-    }
-
-    public void setHeritage(MarkupElement parent) {
-        setAncestor(parent.getAncestor());
+    public void setHeritage(Element parent) {
+        setAncestor(parent.getAncestor() == null ? parent : parent.getAncestor());
         setParent(parent);
     }
 
@@ -145,25 +113,28 @@ public class MarkupElement {
         Getters and Setters.
      */
 
-    public MarkupElement getAncestor() {
+    @Override
+    public IElement getAncestor() {
         return ancestor;
     }
 
-    private void setAncestor(MarkupElement ancestor) {
+    private void setAncestor(IElement ancestor) {
         this.ancestor = ancestor;
     }
 
-    public MarkupElement getParent() {
+    @Override
+    public IElement getParent() {
         return parent;
     }
 
-    private void setParent(MarkupElement parent) {
+    private void setParent(IElement parent) {
         this.parent = parent;
     }
 
     /**
-     * @return The list of child elements within this MarkupElement class.
+     * @return The list of child elements within this Element class.
      */
+    @Override
     public List getChildren() {
         return children;
     }
