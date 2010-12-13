@@ -1,6 +1,5 @@
 package org.bails.markup;
 
-import org.bails.IElement;
 import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
 
@@ -11,12 +10,12 @@ import java.util.*;
  *
  * @author Karl Bennett
  */
-public class Element implements IElement {
+public class Element {
 
     public static final String BAILS_ID_NAME = "bails:id"; // Bails attribute name. Quick dirty and going to change.
 
-    private IElement ancestor;
-    private IElement parent;
+    private Element ancestor;
+    private Element parent;
     private List children = new ArrayList();
 
     public Element() {
@@ -61,8 +60,8 @@ public class Element implements IElement {
                     break;
                 }
                 case BAILS: {
-                    this.add(new BailsTagElement(this, stream, stream.getBailsId(), stream.getCharSequence(),
-                            stream.getName(), stream.getAttributes()));
+                    this.add(new TagElement(this, stream, stream.getCharSequence(), stream.getName(),
+                            stream.getAttributes()));
                     break;
                 }
             }
@@ -99,7 +98,6 @@ public class Element implements IElement {
      * @param i the index of the child.
      * @return the child at the given index.
      */
-    @Override
     public Object getChild(int i) {
         return children == null ? null : children.get(i);
     }
@@ -113,28 +111,25 @@ public class Element implements IElement {
         Getters and Setters.
      */
 
-    @Override
-    public IElement getAncestor() {
+    public Element getAncestor() {
         return ancestor;
     }
 
-    private void setAncestor(IElement ancestor) {
+    private void setAncestor(Element ancestor) {
         this.ancestor = ancestor;
     }
 
-    @Override
-    public IElement getParent() {
+    public Element getParent() {
         return parent;
     }
 
-    private void setParent(IElement parent) {
+    private void setParent(Element parent) {
         this.parent = parent;
     }
 
     /**
      * @return The list of child elements within this Element class.
      */
-    @Override
     public List getChildren() {
         return children;
     }
