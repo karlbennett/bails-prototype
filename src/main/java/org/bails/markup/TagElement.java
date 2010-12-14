@@ -1,9 +1,9 @@
 package org.bails.markup;
 
+import org.bails.Element;
 import org.bails.stream.IBailsStream;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,17 +11,14 @@ import java.util.Map;
  *
  * @author Karl Bennett
  */
-public class TagElement extends Element {
+public class TagElement extends BuildibleElement {
 
     private CharSequence openTag;
     private String name;
     private Map<String, Object> attributes = new HashMap<String, Object>();
     private CharSequence closeTag;
 
-    private boolean openClose = false; // Indicates whether if this is an openClose tag or not which effects the toString method.
-
-    public TagElement() {
-    }
+    private Boolean openClose = false; // Indicates whether if this is an openClose tag or not which effects the toString method.
 
     public TagElement(Element parent, IBailsStream stream, CharSequence openTag, String name,
                       Map<String, Object> attributes) {
@@ -30,33 +27,18 @@ public class TagElement extends Element {
 
     public TagElement(Element parent, IBailsStream stream, CharSequence openTag, String name,
                       Map<String, Object> attributes, boolean openClose) {
-        setHeritage(parent);
-        populateElement(stream, openTag, name, attributes, openClose);
-    }
+        super(parent, stream);
 
-    public TagElement(Element... childs) {
-        super(childs);
-    }
-
-    public TagElement(List<Element> children) {
-        super(children);
+        this.openTag = openTag;
+        this.name = name;
+        this.attributes = attributes;
+        this.openClose = openClose;
+        this.closeTag = stream.getCharSequence();
     }
 
     /*
         Convenience methods.
      */
-
-    protected void populateElement(IBailsStream stream, CharSequence openTag, String name,
-                                   Map<String, Object> attributes, boolean openClose) {
-        this.openTag = openTag;
-        this.name = name;
-        this.attributes = attributes;
-        this.openClose = openClose;
-
-        addChildren(stream);
-
-        this.closeTag = stream.getCharSequence();
-    }
 
     /*
         Getters and Setters.

@@ -1,5 +1,6 @@
 package org.bails.markup;
 
+import org.bails.Element;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
@@ -12,7 +13,8 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 import static org.bails.test.TestBailsTestUtil.*;
 import static org.mockito.Mockito.*;
 
@@ -38,7 +40,8 @@ public class ElementTest {
 
     @Test
     public void initialiseMarkupElement() throws Exception {
-        Element element = new Element(stream);
+        Element element = new Document(stream);
+        assertNotNull("element string", element.toString());
     }
 
     @Test
@@ -50,7 +53,7 @@ public class ElementTest {
 
         when(stream.getCharSequence()).thenReturn(TEST_CHAR_SEQUENCE);
 
-        Element element = new Element(stream);
+        Element element = new Document(stream);
 
         verify(stream, times(2)).next();
         verify(stream, times(2)).hasNext();
@@ -70,7 +73,7 @@ public class ElementTest {
         when(stream.getCharSequence()).thenReturn(TEST_OPEN_CLOSE_TAG).thenReturn("");
         when(stream.getName()).thenReturn(TEST_NAME);
 
-        Element element = new Element(stream);
+        Element element = new Document(stream);
 
         verify(stream, times(3)).next();
         verify(stream, times(3)).hasNext();
@@ -96,7 +99,7 @@ public class ElementTest {
         when(stream.getName()).thenReturn(TEST_NAME);
         when(stream.getAttributes()).thenReturn(TEST_ATTRIBUTES);
 
-        Element element = new Element(stream);
+        Element element = new Document(stream);
 
         verify(stream, times(3)).next();
         verify(stream, times(3)).hasNext();

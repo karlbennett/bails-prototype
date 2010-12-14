@@ -1,5 +1,7 @@
 package org.bails.markup;
 
+import org.bails.Element;
+import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
 
 /**
@@ -7,15 +9,12 @@ import org.bails.stream.IBailsStream;
  *
  * @author Karl Bennett
  */
-public class CharactersElement extends Element {
+public class CharactersElement extends BuildibleElement {
 
     private CharSequence chars;
 
-    public CharactersElement() {
-    }
-
     public CharactersElement(Element parent, IBailsStream stream) {
-        setHeritage(parent);
+        super(parent, null);
         chars = stream.getCharSequence();
     }
 
