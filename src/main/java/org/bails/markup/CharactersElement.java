@@ -19,10 +19,6 @@ public class CharactersElement extends BuildibleElement {
 
     @Override
     public String toString() {
-        StringBuilder elementString = new StringBuilder(0);
-
-        elementString.append(chars);
-
-        return elementString.toString();
+        return chars.toString();
     }
 }
