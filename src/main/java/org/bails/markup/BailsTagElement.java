@@ -13,7 +13,7 @@ public class BailsTagElement extends TagElement {
 
     private String bailsId;
 
-    public BailsTagElement(Element parent, IBailsStream stream,  String bailsId, CharSequence openTag, String name,
+    public BailsTagElement(Element parent, IBailsStream stream, String bailsId, CharSequence openTag, String name,
                            Map<String, Object> attributes) {
         this(parent, stream, bailsId, openTag, name, attributes, false);
     }

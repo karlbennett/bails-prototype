@@ -1,7 +1,6 @@
 package org.bails.markup;
 
 import org.bails.Element;
-import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
 
 /**
