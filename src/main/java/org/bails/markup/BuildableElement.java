@@ -3,14 +3,15 @@ package org.bails.markup;
 import org.bails.Element;
 import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
+import org.bails.visitor.VisitableElement;
 
 /**
  * User: Karl Bennett
  * Date: 13/12/10
  */
-public abstract class BuildibleElement extends Element {
+public abstract class BuildableElement extends VisitableElement {
 
-    public BuildibleElement(Element parent, IBailsStream stream) {
+    public BuildableElement(Element parent, IBailsStream stream) {
         super(parent);
         if (stream != null) addChildren(stream);
     }

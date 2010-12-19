@@ -1,6 +1,7 @@
 package org.bails.markup;
 
 import org.bails.Element;
+import org.bails.Page;
 import org.bails.stream.IBailsStream;
 
 /**
@@ -8,7 +9,7 @@ import org.bails.stream.IBailsStream;
  *
  * @author Karl Bennett
  */
-public class CharactersElement extends BuildibleElement {
+public class CharactersElement extends BuildableElement {
 
     private CharSequence chars;
 
@@ -19,6 +20,17 @@ public class CharactersElement extends BuildibleElement {
 
     @Override
     public String toString() {
-        return chars.toString();
+        String returnString = chars.toString();
+
+        Element ancestor = getAncestor();
+        if (ancestor instanceof Page) {
+            Element parent = getParent();
+            if (parent instanceof BailsTagElement && parent.getChildren().size() == 1) {
+                returnString = ((Page) ancestor).getBailsChild(
+                        ((BailsTagElement) parent).getBailsPath()).getChild(0).toString();
+            }
+        }
+
+        return returnString;
     }
 }

@@ -4,7 +4,7 @@ import org.bails.Element;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.ELEMENT_TYPE;
 import org.bails.stream.IBailsStream;
-import org.bails.test.TestBailsTestUtil;
+import org.bails.test.BailsTestUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +15,7 @@ import java.nio.charset.Charset;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
-import static org.bails.test.TestBailsTestUtil.*;
+import static org.bails.test.BailsTestUtil.*;
 import static org.mockito.Mockito.*;
 
 
@@ -29,7 +29,7 @@ public class ElementTest {
     @Before
     public void initStream() throws FileNotFoundException {
         stream = new BailsStreamSTAX(new ByteArrayInputStream(
-                TestBailsTestUtil.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
+                BailsTestUtil.XML_DCOUMENT.getBytes(Charset.forName("UTF8"))));
     }
 
     @After

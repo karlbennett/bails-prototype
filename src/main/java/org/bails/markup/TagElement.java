@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author Karl Bennett
  */
-public class TagElement extends BuildibleElement {
+public class TagElement extends BuildableElement {
 
     private CharSequence openTag;
     private String name;
