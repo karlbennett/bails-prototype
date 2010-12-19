@@ -31,7 +31,7 @@ public abstract class Element {
         Convenience methods.
      */
 
-    public void setHeritage(Element parent) {
+    private void setHeritage(Element parent) {
         setAncestor(parent == null || parent.getAncestor() == null ? parent : parent.getAncestor());
         setParent(parent);
     }
