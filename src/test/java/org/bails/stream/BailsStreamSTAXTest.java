@@ -104,60 +104,6 @@ public class BailsStreamSTAXTest {
     }
 
     @Test
-    public void testExpectedCharSequences() throws Exception {
-        StringBuilder testString = new StringBuilder(0);
-
-        stream.next(); // DOCUMENT_START
-        stream.next(); //   <element xmlns:bails='http://www.bails.org/'>
-//        assertEquals("element one char sequence correct.", TestBailsTestUtil.XML_LINE_ONE, stream.getCharSequence());
-
-        stream.next();
-        testString.append(stream.getCharSequence()); //     <element one='1' two='2' three='3'>
-        stream.next();
-        testString.append(stream.getCharSequence()); //     <element one='1' two='2' three='3'>Some text one.
-        stream.next();
-        testString.append(stream.getCharSequence()); //     <element one='1' two='2' three='3'>Some text one.</element>\n
-        assertTrue("element two match correct.", testString.toString().matches(
-                "^\\s+<element (one='1'|two='2'|three='3') (one='1'|two='2'|three='3') (one='1'|two='2'|three='3')>Some text one.</element>\\n"));
-
-        testString.setLength(0);
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element>
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element>Some test two.
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element>Some test two.</element>\n
-        Assert.assertEquals("element three char sequence correct.", TestBailsTestUtil.XML_LINE_THREE, testString.toString());
-
-        testString.setLength(0);
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element bails:id='test_element'>
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element bails:id='test_element'>Some text three.
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element bails:id='test_element'>Some text three.</element>\n
-        Assert.assertEquals("element four char sequence correct.", TestBailsTestUtil.XML_LINE_FOUR, testString.toString());
-
-        testString.setLength(0);
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element>
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element></element>\n
-        Assert.assertEquals("element five char sequence correct.", TestBailsTestUtil.XML_LINE_FIVE, testString.toString());
-
-        testString.setLength(0);
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element>
-        stream.next();
-        testString.append(stream.getCharSequence()); //    <element></element>\n - OpenClose tags are split into two elements.
-        Assert.assertEquals("element six char sequence correct.", TestBailsTestUtil.XML_LINE_FIVE, testString.toString());
-
-
-        stream.next(); // </element>
-        Assert.assertEquals("element seven char sequence correct.", TestBailsTestUtil.XML_LINE_SEVEN, stream.getCharSequence());
-    }
-
-    @Test
     public void testIntegrationTest() throws Exception {
         Element element = new Document(stream);
 
