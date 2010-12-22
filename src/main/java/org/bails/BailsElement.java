@@ -52,15 +52,32 @@ public class BailsElement extends VisitableElement implements IBailsElement {
 
     @Override
     public Element add(Object... childs) {
-
-        if (getAncestor() != null) {
-            for (Object child : childs) {
-                if (child instanceof BailsElement) {
-                    ((Page) getAncestor()).add(child);
-                }
-            }
+        for (Object child : childs) {
+            setChildAncestor(child);
+            setChildParent(child);
+            addChildToAncestor(child);
         }
 
         return super.add(childs);
+    }
+
+    private void setChildAncestor(Object child) {
+        if (getAncestor() != null && child instanceof Element) {
+            ((Element) child).setAncestor(getAncestor());
+        }
+    }
+
+    private void setChildParent(Object child) {
+        if (child instanceof Element) {
+            ((Element) child).setParent(this);
+        }
+    }
+
+    private void addChildToAncestor(Object child) {
+        if (getAncestor() != null && getAncestor() instanceof Page) {
+            if (child instanceof BailsElement) {
+                ((Page) getAncestor()).addBailsChildren((BailsElement) child);
+            }
+        }
     }
 }

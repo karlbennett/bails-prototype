@@ -1,6 +1,5 @@
 package org.bails;
 
-import org.bails.markup.Document;
 import org.bails.visitor.IVisitable;
 import org.bails.visitor.IVisitor;
 
@@ -13,66 +12,67 @@ import java.util.Map;
  */
 public abstract class Page extends Element {
 
-    private Document document;
-    private final Map<String, Element> bailsChildren = new HashMap<String, Element>();
-
-    public Page() {
-    }
-
-    public Page(Document document) {
-        this.document = document;
-        this.document.setAncestor(this);
-    }
+    private Map<String, BailsElement> bailsChildren = new HashMap<String, BailsElement>();
 
     public final String render() {
-        return document.toString();
+        return toString();
     }
 
     public abstract void design();
 
-    public Element getBailsChild(String bailsPath) {
+    public BailsElement getBailsChild(String bailsPath) {
         return bailsChildren.get(bailsPath);
     }
 
-    @Override
-    public Element add(Object... childs) {
-        for (Object child : childs) {
+    public Page addBailsChild(BailsElement child) {
+        bailsChildren.put(child.getBailsPath(), child);
 
-            if (child instanceof BailsElement) { // If one of the children being added to the page is a BailsElement...
+        return this;
+    }
 
-                // If the new bails child has not had it's heritage set then set it for it's self and it's descendants.
-                if (((BailsElement) child).getAncestor() != this || ((BailsElement) child).getParent() == null) {
-                    // ...get a reference to this page that will be used as the ancestor for this child and any of it's descendants that are also
-                    // bails elements.
-                    final Page thisPage = this;
-
-                    ((BailsElement) child).setParent(thisPage); // Set this child's parent to be this page.
-
-                    ((BailsElement) child).visitChildren(new IVisitor() { // Visit all of the child's descendants...
-
-                        @Override
-                        public void element(IVisitable host) {
-
-                            if (host instanceof BailsElement) { // ...and for any that are BailsElements...
-
-                                BailsElement bailsElement = (BailsElement) host;
-
-                                bailsElement.setAncestor(thisPage); // ...set their ancestor to be this page...
-
-                                bailsChildren.put(((BailsElement) host).getBailsPath(), (Element) host);
-
-                                // ...then lastly for any direct children of the descendants...
-                                for (Object child : bailsElement.getChildren()) {
-                                    // ...that are also BailsElements set their parent as this descendant.
-                                    if (child instanceof BailsElement) ((BailsElement) child).setParent(bailsElement);
-                                }
-                            }
-                        }
-                    });
-                }
-            }
+    public Page addBailsChildren(BailsElement... childs) {
+        for (BailsElement child : childs) {
+            populateAncestors(child);
+            bailsChildren.put(child.getBailsPath(), child);
         }
 
-        return super.add(childs);
+        return this;
+    }
+
+    public Page add(BailsElement... childs) {
+        addBailsChildren(childs);
+
+        return (Page) super.add(childs);
+    }
+
+
+    private void populateAncestors(BailsElement child) {
+        final Page thisPage = this;
+        child.visitChildren(new IVisitor() {
+            @Override
+            public void element(IVisitable host) {
+                if (host instanceof BailsElement) {
+                    ((BailsElement) host).setAncestor(thisPage);
+                    thisPage.addBailsChild((BailsElement) host);
+                }
+            }
+        });
+
+        child.visitParents(new IVisitor() {
+            @Override
+            public void element(IVisitable host) {
+                if (host instanceof BailsElement) {
+                    ((BailsElement) host).setAncestor(thisPage);
+                }
+            }
+        });
+    }
+
+    protected Map<String, BailsElement> getBailsChildren() {
+        return bailsChildren;
+    }
+
+    protected void setBailsChildren(Map<String, BailsElement> bailsChildren) {
+        this.bailsChildren = bailsChildren;
     }
 }

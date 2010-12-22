@@ -16,6 +16,9 @@ public final class BailsTestUtil {
     public static final String TEST_BAILS_ID_ONE = "test_element_one";
     public static final String TEST_BAILS_ID_TWO = "test_element_two";
     public static final String TEST_BAILS_ID_THREE = "test_element_three";
+    public static final String TEST_BAILS_ID_FOUR = "test_element_four";
+    public static final String TEST_BAILS_ID_FIVE = "test_element_five";
+    public static final String TEST_BAILS_ID_SIX = "test_element_six";
 
     public static final String XML_LINE_ONE =      "<element xmlns:bails='http://www.bails.org/' bails:id='" + TEST_BAILS_ID_ONE + "'>\n";
     public static final String XML_LINE_TWO =      "    <element one='1' two='2' three='3'>Some text one.</element>\n";
