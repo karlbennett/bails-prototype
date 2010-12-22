@@ -1,5 +1,7 @@
 package org.bails;
 
+import org.bails.visitor.IVisitor;
+
 import java.util.*;
 
 /**
@@ -96,9 +98,16 @@ public abstract class Element {
 
     @Override
     public String toString() {
+        return toString(null);
+    }
+
+    public String toString(IVisitor<String> visitor) {
         StringBuilder elementString = new StringBuilder(0);
 
-        for (Object child : children) elementString.append(child.toString()); // Run to string across all the children.
+        for (Object child : children) { // Run to string across all the children.
+            if (child instanceof Element) elementString.append(((Element) child).toString(visitor));
+            else elementString.append(child.toString());
+        }
 
         return elementString.toString(); // Return the complete string representation of the element.
     }

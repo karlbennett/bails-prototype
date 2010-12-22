@@ -39,11 +39,13 @@ public class VisitableElementTest {
 
         Document document = new Document(stream);
 
-        document.visitChildren(new IVisitor() {
+        document.visitChildren(new IVisitor<Object>() {
             @Override
-            public void element(IVisitable element) {
+            public Object element(IVisitable element) {
                 assertNotNull("element exists", element);
                 assertTrue("element is visitable", element instanceof IVisitable);
+
+                return null;
             }
         });
     }

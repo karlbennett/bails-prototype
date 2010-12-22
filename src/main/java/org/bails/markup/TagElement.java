@@ -2,6 +2,7 @@ package org.bails.markup;
 
 import org.bails.Element;
 import org.bails.stream.IBailsStream;
+import org.bails.visitor.IVisitor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -109,11 +110,11 @@ public class TagElement extends BuildableElement {
     */
 
     @Override
-    public String toString() {
+    public String toString(IVisitor<String> visitor) {
         StringBuilder elementString = new StringBuilder(0);
 
         elementString.append(getOpenTag()); // ...add the open tag to the output, ...
-        elementString.append(super.toString()); // ...add the child chars, ...
+        elementString.append(super.toString(visitor)); // ...add the child chars, ...
         elementString.append(getCloseTag()); // ...then lastly add the close tag.
 
         return elementString.toString(); // Return the complete string representation of the element.

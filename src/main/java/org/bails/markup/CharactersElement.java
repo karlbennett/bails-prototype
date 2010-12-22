@@ -3,6 +3,7 @@ package org.bails.markup;
 import org.bails.Element;
 import org.bails.Page;
 import org.bails.stream.IBailsStream;
+import org.bails.visitor.IVisitor;
 
 /**
  * This class gives an object representation of a tag within bails markup.
@@ -19,7 +20,8 @@ public class CharactersElement extends BuildableElement {
     }
 
     @Override
-    public String toString() {
-        return chars.toString();
+    public String toString(IVisitor<String> visitor) {
+        if (visitor == null) return chars.toString();
+        else return visitor.element(this);
     }
 }

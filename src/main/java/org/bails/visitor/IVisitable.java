@@ -6,7 +6,7 @@ package org.bails.visitor;
  */
 public interface IVisitable {
 
-    public void visitChildren(IVisitor visitor);
+    public <R> void visitChildren(IVisitor<R> visitor);
 
-    public void visitParents(IVisitor visitor);
+    public <R> void visitParents(IVisitor<R> visitor);
 }

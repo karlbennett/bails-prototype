@@ -1,5 +1,8 @@
 package org.bails;
 
+import org.bails.markup.BailsTagElement;
+import org.bails.markup.CharactersElement;
+import org.bails.markup.Document;
 import org.bails.visitor.IVisitable;
 import org.bails.visitor.IVisitor;
 
@@ -14,8 +17,31 @@ public abstract class Page extends Element {
 
     private Map<String, BailsElement> bailsChildren = new HashMap<String, BailsElement>();
 
-    public final String render() {
-        return toString();
+    public final String render(Document document) {
+
+        final Page thisPage = this;
+
+        return document.toString(new IVisitor<String>() {
+            @Override
+            public String element(IVisitable host) {
+                if (host instanceof CharactersElement) {
+                    Element parent = ((CharactersElement) host).getParent();
+                    // The parent is a bail tag and it only has this character element as it child then it must be a candidate for replacement.
+                    if (parent instanceof BailsTagElement && parent.getChildren().size() == 1) {
+                        BailsElement element = thisPage.getBailsChild(((BailsTagElement) parent).getBailsPath());
+
+                        // TODO Create a proper exception for missing bails elements.
+                        if (element == null) throw new RuntimeException("No matching BailsElement found for bails tag "
+                                + ((BailsTagElement) parent).getBailsId() + ".");
+                        else return element.toString();
+                    }
+
+                    return host.toString();
+                }
+
+                return "";
+            }
+        });
     }
 
     public abstract void design();
@@ -24,13 +50,13 @@ public abstract class Page extends Element {
         return bailsChildren.get(bailsPath);
     }
 
-    public Page addBailsChild(BailsElement child) {
+    private Page addBailsChild(BailsElement child) {
         bailsChildren.put(child.getBailsPath(), child);
 
         return this;
     }
 
-    public Page addBailsChildren(BailsElement... childs) {
+    protected Page addBailsChildren(BailsElement... childs) {
         for (BailsElement child : childs) {
             populateAncestors(child);
             bailsChildren.put(child.getBailsPath(), child);
@@ -45,25 +71,28 @@ public abstract class Page extends Element {
         return (Page) super.add(childs);
     }
 
-
     private void populateAncestors(BailsElement child) {
         final Page thisPage = this;
-        child.visitChildren(new IVisitor() {
+        child.visitChildren(new IVisitor<Object>() {
             @Override
-            public void element(IVisitable host) {
+            public Object element(IVisitable host) {
                 if (host instanceof BailsElement) {
                     ((BailsElement) host).setAncestor(thisPage);
                     thisPage.addBailsChild((BailsElement) host);
                 }
+
+                return null;
             }
         });
 
-        child.visitParents(new IVisitor() {
+        child.visitParents(new IVisitor<Object>() {
             @Override
-            public void element(IVisitable host) {
+            public Object element(IVisitable host) {
                 if (host instanceof BailsElement) {
                     ((BailsElement) host).setAncestor(thisPage);
                 }
+
+                return null;
             }
         });
     }

@@ -16,13 +16,15 @@ public class BailsUtil {
     public static <E extends IBailsElement & IVisitable> String buildBailsPath(E element) {
         final StringBuilder bailsPath = new StringBuilder();
 
-        element.visitParents(new IVisitor() {
+        element.visitParents(new IVisitor<Object>() {
             @Override
-            public void element(IVisitable host) {
+            public Object element(IVisitable host) {
                 if (host instanceof IBailsElement) {
                     bailsPath.insert(0, ((IBailsElement) host).getBailsId());
                     bailsPath.insert(0, ":");
                 }
+
+                return null;
             }
         });
 

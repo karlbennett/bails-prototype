@@ -1,5 +1,6 @@
 package org.bails;
 
+import org.bails.markup.Document;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
 import org.bails.test.BailsTestUtil;
@@ -41,6 +42,8 @@ public class PageTest {
 
         page.design();
 
+        String render = page.render(new Document(stream));
+
         assertTrue("page contains children", 0 < page.getBailsChildren().size());
         assertEquals("child bailsId correct", TEST_BAILS_ID_ONE, page.getBailsChild(TEST_BAILS_ID_ONE).getBailsId());
         assertEquals("child bailsPath correct", TEST_BAILS_ID_ONE, page.getBailsChild(TEST_BAILS_ID_ONE).getBailsPath());
@@ -48,6 +51,8 @@ public class PageTest {
                 page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsId());
         assertEquals("child child's bailsPath correct", TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO,
                 page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsPath());
+
+        System.out.println(render);
     }
 
     @Test
@@ -60,14 +65,14 @@ public class PageTest {
         @Override
         public void design() {
             BailsElement element1 = new BailsElement(TEST_BAILS_ID_ONE);
-            element1.add(new BailsElement(TEST_BAILS_ID_TWO, "Something."));
+            element1.add(new BailsElement(TEST_BAILS_ID_TWO, "Replaced text."));
             add(element1);
-            element1.add(new BailsElement(TEST_BAILS_ID_THREE, "Something else."));
+            element1.add(new BailsElement(TEST_BAILS_ID_THREE, "Something more replaced text."));
 
             BailsElement element2 = new BailsElement(TEST_BAILS_ID_FOUR);
-            element2.add(new BailsElement(TEST_BAILS_ID_FIVE, "Something else again."));
+            element2.add(new BailsElement(TEST_BAILS_ID_FIVE, "A bit more replaced text."));
             add(element2);
-            element2.add(new BailsElement(TEST_BAILS_ID_SIX, "Something new this time."));
+            element2.add(new BailsElement(TEST_BAILS_ID_SIX, "The last bit of replaced text."));
 
         }
     }

@@ -12,7 +12,7 @@ public class VisitorUtil {
 
     private VisitorUtil() {}
 
-    public static <E extends Element & IVisitable> void visitChildren(E host, IVisitor visitor) {
+    public static <E extends Element & IVisitable, R> void visitChildren(E host, IVisitor<R> visitor) {
         visitor.element(host);
 
         for (Object child : host.getChildren()) {
@@ -20,7 +20,7 @@ public class VisitorUtil {
         }
     }
 
-    public static <E extends Element & IVisitable> void visitParents(E host, IVisitor visitor) {
+    public static <E extends Element & IVisitable, R> void visitParents(E host, IVisitor<R> visitor) {
         visitor.element(host);
 
         Element parent = host.getParent();
