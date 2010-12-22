@@ -1,6 +1,5 @@
 package org.bails;
 
-import org.bails.markup.Document;
 import org.bails.stream.BailsStreamSTAX;
 import org.bails.stream.IBailsStream;
 import org.bails.test.BailsTestUtil;
@@ -12,7 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.bails.test.BailsTestUtil.*;
 
 /**
@@ -47,28 +47,28 @@ public class PageTest {
         assertEquals("child child's bailsId correct", TEST_BAILS_ID_TWO,
                 page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsId());
         assertEquals("child child's bailsPath correct", TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO,
-                 page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsPath());
+                page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsPath());
     }
 
     @Test
     public void testGetBailsChild() throws Exception {
 
     }
-}
 
-class TestPage extends Page {
+    private class TestPage extends Page {
 
-    @Override
-    public void design() {
-        BailsElement element1 = new BailsElement(TEST_BAILS_ID_ONE);
-        element1.add(new BailsElement(TEST_BAILS_ID_TWO, "Something."));
-        add(element1);
-        element1.add(new BailsElement(TEST_BAILS_ID_THREE, "Something else."));
+        @Override
+        public void design() {
+            BailsElement element1 = new BailsElement(TEST_BAILS_ID_ONE);
+            element1.add(new BailsElement(TEST_BAILS_ID_TWO, "Something."));
+            add(element1);
+            element1.add(new BailsElement(TEST_BAILS_ID_THREE, "Something else."));
 
-        BailsElement element2 = new BailsElement(TEST_BAILS_ID_FOUR);
-        element2.add(new BailsElement(TEST_BAILS_ID_FIVE, "Something else again."));
-        add(element2);
-        element2.add(new BailsElement(TEST_BAILS_ID_SIX, "Something new this time."));
+            BailsElement element2 = new BailsElement(TEST_BAILS_ID_FOUR);
+            element2.add(new BailsElement(TEST_BAILS_ID_FIVE, "Something else again."));
+            add(element2);
+            element2.add(new BailsElement(TEST_BAILS_ID_SIX, "Something new this time."));
 
+        }
     }
 }
