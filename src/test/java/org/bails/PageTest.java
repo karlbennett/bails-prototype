@@ -51,8 +51,6 @@ public class PageTest {
                 page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsId());
         assertEquals("child child's bailsPath correct", TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO,
                 page.getBailsChild(TEST_BAILS_ID_ONE + ":" + TEST_BAILS_ID_TWO).getBailsPath());
-
-        System.out.println(render);
     }
 
     @Test
